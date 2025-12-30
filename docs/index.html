@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pommelien Thijs | Mega Dashboard | 1+1=1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --spotify-green: #1DB954;
+            --spotify-green-dim: rgba(29, 185, 84, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #8b949e;
+            --text-dim: #484f58;
+            --border-color: rgba(29, 185, 84, 0.2);
+            --card-bg: rgba(13, 17, 23, 0.8);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0d1117 50%, #161b22 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .nav-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-logo-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--spotify-green), #169c46);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--bg-dark);
+        }
+        .nav-logo-text {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .nav-logo-text span { color: var(--spotify-green); }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--spotify-green);
+            background: var(--spotify-green-dim);
+        }
+        main { margin-top: 70px; }
+        section {
+            min-height: 100vh;
+            padding: 80px 40px;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .section-tag {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--spotify-green);
+            background: var(--spotify-green-dim);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff, var(--spotify-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #unity {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+        .hero-eyebrow {
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--spotify-green);
+            margin-bottom: 24px;
+        }
+        .hero-title {
+            font-size: clamp(48px, 8vw, 100px);
+            font-weight: 700;
+            letter-spacing: -3px;
+            line-height: 0.9;
+            margin-bottom: 24px;
+        }
+        .hero-title .highlight {
+            color: var(--spotify-green);
+            text-shadow: 0 0 60px rgba(29, 185, 84, 0.5);
+        }
+        .hero-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 40px;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+        .hero-stat { text-align: center; }
+        .hero-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--spotify-green);
+            display: block;
+        }
+        .hero-stat-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+        .viz-grid {
+            display: grid;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .viz-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .viz-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .viz-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .viz-card:hover {
+            border-color: var(--spotify-green-dim);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .viz-card-header {
+            padding: 24px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .viz-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .viz-card-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .viz-card-badge {
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--spotify-green);
+            background: var(--spotify-green-dim);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .viz-container {
+            height: 350px;
+            padding: 15px;
+        }
+        .viz-container-lg { height: 450px; }
+        .viz-full { grid-column: 1 / -1; }
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--spotify-green);
+            margin-bottom: 8px;
+        }
+        .metric-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background: rgba(10, 10, 15, 0.8);
+        }
+        .footer-brand {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .footer-brand span { color: var(--spotify-green); }
+        .footer-text {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .viz-grid-2, .viz-grid-3 { grid-template-columns: 1fr; }
+            .metrics-row { grid-template-columns: repeat(2, 1fr); }
+            .hero-stats { flex-direction: column; gap: 30px; }
+            section { padding: 60px 20px; }
+        }
+        @media (max-width: 600px) {
+            .metrics-row { grid-template-columns: 1fr; }
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: var(--spotify-green);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: twinkle 3s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <nav class="nav-header">
+        <div class="nav-logo">
+            <div class="nav-logo-icon">PT</div>
+            <div class="nav-logo-text">Pommelien <span>Thijs</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#unity" class="nav-link active">Unity</a></li>
+            <li><a href="#october" class="nav-link">October</a></li>
+            <li><a href="#atlas" class="nav-link">Atlas</a></li>
+            <li><a href="#transitions" class="nav-link">Transitions</a></li>
+            <li><a href="#engagement" class="nav-link">Engagement</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- UNITY HERO -->
+        <section id="unity">
+            <div class="hero-content">
+                <div class="hero-eyebrow">Nouri's Spotify Analysis 2025</div>
+                <h1 class="hero-title">
+                    <span class="highlight">1+1=1</span><br>
+                    UNITY DAY
+                </h1>
+                <p class="hero-description">
+                    October 25, 2025 - The day all patterns converged.
+                    571 minutes. 213 plays. 33 unique tracks. Unity Score: 69.74
+                </p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">117.8</span>
+                        <span class="hero-stat-label">Hours in 2025</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">85.7</span>
+                        <span class="hero-stat-label">Hours in October</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">2,507</span>
+                        <span class="hero-stat-label">Total Plays</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">413</span>
+                        <span class="hero-stat-label">Atlas Plays</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- OCTOBER WINDOW -->
+        <section id="october">
+            <div class="section-header">
+                <span class="section-tag">The Synchronicity Window</span>
+                <h2 class="section-title">October 2025</h2>
+                <p class="section-subtitle">
+                    Four days of immersion. Oct 22-25. Z-scores > 2.
+                    This is where 1+1=1 became real.
+                </p>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-value">791</div>
+                    <div class="metric-label">October Plays</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">595m</div>
+                    <div class="metric-label">Peak Day (Oct 24)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">79%</div>
+                    <div class="metric-label">Pommelien Share</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">4</div>
+                    <div class="metric-label">Sync Days</div>
+                </div>
+            </div>
+
+            <div class="viz-grid viz-grid-2">
+                <div class="viz-card viz-full">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Daily Intensity Timeline</h3>
+                            <p class="viz-card-subtitle">Minutes played per day with Unity Score overlay</p>
+                        </div>
+                        <span class="viz-card-badge">Timeline</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="octoberTimeline"></div>
+                </div>
+            </div>
+
+            <div class="viz-grid viz-grid-3" style="margin-top: 30px;">
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">24-Hour Pattern</h3>
+                            <p class="viz-card-subtitle">When the music plays</p>
+                        </div>
+                        <span class="viz-card-badge">Hourly</span>
+                    </div>
+                    <div class="viz-container" id="hourlyChart"></div>
+                </div>
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Weekday Distribution</h3>
+                            <p class="viz-card-subtitle">Saturday peaks</p>
+                        </div>
+                        <span class="viz-card-badge">Weekly</span>
+                    </div>
+                    <div class="viz-container" id="weekdayChart"></div>
+                </div>
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Top October Tracks</h3>
+                            <p class="viz-card-subtitle">The rotation</p>
+                        </div>
+                        <span class="viz-card-badge">Tracks</span>
+                    </div>
+                    <div class="viz-container" id="topTracksChart"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATLAS -->
+        <section id="atlas">
+            <div class="section-header">
+                <span class="section-tag">The #1 Track</span>
+                <h2 class="section-title">Atlas Deep Dive</h2>
+                <p class="section-subtitle">
+                    413 plays. 19 hours. 186 consecutive Atlas→Atlas transitions detected.
+                    The track that defined 2025.
+                </p>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-value">413</div>
+                    <div class="metric-label">Total Plays</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">19.0h</div>
+                    <div class="metric-label">Hours Listened</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">8.2%</div>
+                    <div class="metric-label">Skip Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">93</div>
+                    <div class="metric-label">Days with Atlas</div>
+                </div>
+            </div>
+
+            <div class="viz-grid viz-grid-2">
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Monthly Atlas Plays</h3>
+                            <p class="viz-card-subtitle">March-April discovery, October resurgence</p>
+                        </div>
+                        <span class="viz-card-badge">Monthly</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="atlasMonthly"></div>
+                </div>
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Weekly Peak Analysis</h3>
+                            <p class="viz-card-subtitle">Week 12 had 121 Atlas plays</p>
+                        </div>
+                        <span class="viz-card-badge">Weekly</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="atlasWeekly"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANSITIONS -->
+        <section id="transitions">
+            <div class="section-header">
+                <span class="section-tag">Flow Analysis</span>
+                <h2 class="section-title">Track Transitions</h2>
+                <p class="section-subtitle">
+                    How songs flow into each other. Atlas→Atlas: 186 times.
+                    The loops reveal the obsession.
+                </p>
+            </div>
+
+            <div class="viz-grid viz-grid-2">
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Transition Matrix</h3>
+                            <p class="viz-card-subtitle">Track-to-track flow heatmap</p>
+                        </div>
+                        <span class="viz-card-badge">Matrix</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="transitionMatrix"></div>
+                </div>
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Connection Strength</h3>
+                            <p class="viz-card-subtitle">Total transitions per track</p>
+                        </div>
+                        <span class="viz-card-badge">Network</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="connectionStrength"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ENGAGEMENT -->
+        <section id="engagement">
+            <div class="section-header">
+                <span class="section-tag">Listening Behavior</span>
+                <h2 class="section-title">Engagement Analytics</h2>
+                <p class="section-subtitle">
+                    Skip rates, completion rates, and the path from discovery to devotion.
+                </p>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-value">2,507</div>
+                    <div class="metric-label">Total Plays</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">14.6%</div>
+                    <div class="metric-label">Avg Skip Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">75.6%</div>
+                    <div class="metric-label">Completion Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">50/50</div>
+                    <div class="metric-label">Windows/Android</div>
+                </div>
+            </div>
+
+            <div class="viz-grid viz-grid-2">
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Engagement Funnel</h3>
+                            <p class="viz-card-subtitle">From play to full listen to repeat</p>
+                        </div>
+                        <span class="viz-card-badge">Funnel</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="engagementFunnel"></div>
+                </div>
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div>
+                            <h3 class="viz-card-title">Track Performance</h3>
+                            <p class="viz-card-subtitle">Skip rate vs plays</p>
+                        </div>
+                        <span class="viz-card-badge">Scatter</span>
+                    </div>
+                    <div class="viz-container viz-container-lg" id="trackPerformance"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-brand">Pommelien Thijs <span>Mega Dashboard</span></div>
+        <p class="footer-text">1+1=1 | Unity Through Data | October 25, 2025</p>
+        <p class="footer-text" style="margin-top: 10px;">Built with Plotly.js | Data from Spotify Extended Streaming History</p>
+    </footer>
+
+    <script>
+        // ============================================
+        // DATA
+        // ============================================
+        const unityData = {
+            topDays: [
+                {date: "2025-10-20", intensity: 288.6, diversity: 39, plays: 128, unity_score: 56.47},
+                {date: "2025-10-22", intensity: 518.7, diversity: 40, plays: 176, unity_score: 69.24},
+                {date: "2025-10-23", intensity: 515.6, diversity: 29, plays: 184, unity_score: 63.35},
+                {date: "2025-10-24", intensity: 595.1, diversity: 31, plays: 218, unity_score: 66.58},
+                {date: "2025-10-25", intensity: 571.0, diversity: 33, plays: 213, unity_score: 69.74}
+            ]
+        };
+
+        const octoberData = {
+            topTracks: {"Entertainment": 63, "Wat Een Idee!?": 57, "Hypothetisch": 53, "Wanneer": 52, "Wie we morgen zijn": 39},
+            hourlyData: [6, 4, 6, 17, 13, 2, 5, 8, 5, 12, 17, 18, 20, 32, 20, 34, 37, 24, 38, 14, 21, 28, 21, 11],
+            weekdayData: [25, 69, 52, 35, 77, 99, 56],
+            weekdayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        };
+
+        const atlasData = {
+            monthlyLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+            monthlyData: [125, 142, 42, 7, 8, 14, 4, 71],
+            weeklyLabels: ["W12", "W13", "W14", "W15", "W16", "W41", "W42"],
+            weeklyData: [121, 51, 35, 29, 30, 30, 24]
+        };
+
+        const transitionData = {
+            tracks: ["Atlas", "Entertainment", "Wat Een Idee!?", "Hypothetisch", "Wanneer", "Wie we morgen", "Doen of Zijn", "Cassandra"],
+            matrix: [
+                [186, 1, 0, 1, 5, 10, 2, 2],
+                [1, 0, 10, 6, 3, 5, 8, 9],
+                [0, 10, 0, 8, 3, 8, 8, 6],
+                [1, 6, 8, 0, 8, 5, 6, 8],
+                [5, 3, 3, 8, 0, 9, 6, 7],
+                [10, 5, 8, 5, 9, 0, 7, 3],
+                [2, 8, 8, 6, 6, 7, 0, 4],
+                [2, 9, 6, 8, 7, 3, 4, 0]
+            ],
+            totals: {"Atlas": 586, "Wie we morgen zijn": 199, "Doen of Zijn": 171, "Wat Een Idee!?": 168, "Entertainment": 137}
+        };
+
+        const engagementData = {
+            tracks: [
+                {track: "Atlas", plays: 413, skip_rate: 8.2},
+                {track: "Wie we morgen zijn", plays: 115, skip_rate: 17.4},
+                {track: "Wanneer", plays: 75, skip_rate: 8.0},
+                {track: "Dunne Lijn", plays: 67, skip_rate: 7.5},
+                {track: "Entertainment", plays: 63, skip_rate: 12.0},
+                {track: "Hypothetisch", plays: 60, skip_rate: 15.0},
+                {track: "Wat Een Idee!?", plays: 58, skip_rate: 14.0}
+            ],
+            totalPlays: 2507
+        };
+
+        // ============================================
+        // PLOTLY CONFIG
+        // ============================================
+        const plotlyConfig = { displayModeBar: false, responsive: true };
+        const plotlyLayout = {
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            font: { family: 'Space Mono, monospace', color: '#8b949e', size: 11 },
+            margin: { t: 30, r: 30, b: 50, l: 60 },
+            xaxis: { gridcolor: 'rgba(29, 185, 84, 0.1)', zerolinecolor: 'rgba(29, 185, 84, 0.2)' },
+            yaxis: { gridcolor: 'rgba(29, 185, 84, 0.1)', zerolinecolor: 'rgba(29, 185, 84, 0.2)' }
+        };
+
+        // ============================================
+        // CREATE STARS
+        // ============================================
+        function createStars() {
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // ============================================
+        // CHARTS
+        // ============================================
+        function loadOctoberTimeline() {
+            const trace1 = {
+                x: unityData.topDays.map(d => d.date),
+                y: unityData.topDays.map(d => d.intensity),
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Minutes',
+                fill: 'tozeroy',
+                fillcolor: 'rgba(29, 185, 84, 0.2)',
+                line: { color: '#1DB954', width: 3 },
+                marker: { size: 10, color: '#1DB954' }
+            };
+            const trace2 = {
+                x: ['2025-10-25'],
+                y: [571],
+                type: 'scatter',
+                mode: 'markers',
+                name: 'Unity Day',
+                marker: { size: 20, color: 'gold', symbol: 'star' }
+            };
+            Plotly.newPlot('octoberTimeline', [trace1, trace2], {
+                ...plotlyLayout,
+                showlegend: false,
+                xaxis: { ...plotlyLayout.xaxis, title: 'October 2025' },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Minutes' }
+            }, plotlyConfig);
+        }
+
+        function loadHourlyChart() {
+            const hours = Array.from({length: 24}, (_, i) => i + ':00');
+            Plotly.newPlot('hourlyChart', [{
+                x: hours,
+                y: octoberData.hourlyData,
+                type: 'bar',
+                marker: {
+                    color: octoberData.hourlyData.map(v =>
+                        v === Math.max(...octoberData.hourlyData) ? '#1DB954' : 'rgba(29, 185, 84, 0.5)'
+                    )
+                }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, tickangle: -45, dtick: 3 },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Plays' }
+            }, plotlyConfig);
+        }
+
+        function loadWeekdayChart() {
+            Plotly.newPlot('weekdayChart', [{
+                x: octoberData.weekdayLabels,
+                y: octoberData.weekdayData,
+                type: 'bar',
+                marker: {
+                    color: octoberData.weekdayData.map(v =>
+                        v === Math.max(...octoberData.weekdayData) ? '#1DB954' : 'rgba(29, 185, 84, 0.5)'
+                    )
+                }
+            }], {
+                ...plotlyLayout,
+                yaxis: { ...plotlyLayout.yaxis, title: 'Plays' }
+            }, plotlyConfig);
+        }
+
+        function loadTopTracksChart() {
+            const tracks = Object.keys(octoberData.topTracks);
+            const values = Object.values(octoberData.topTracks);
+            Plotly.newPlot('topTracksChart', [{
+                y: tracks.reverse(),
+                x: values.reverse(),
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#1DB954' }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, title: 'Plays' },
+                margin: { ...plotlyLayout.margin, l: 120 }
+            }, plotlyConfig);
+        }
+
+        function loadAtlasMonthly() {
+            Plotly.newPlot('atlasMonthly', [{
+                x: atlasData.monthlyLabels,
+                y: atlasData.monthlyData,
+                type: 'bar',
+                marker: {
+                    color: atlasData.monthlyData.map(v =>
+                        `rgba(29, 185, 84, ${0.3 + (v / Math.max(...atlasData.monthlyData)) * 0.7})`
+                    )
+                }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, title: 'Month 2025' },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Atlas Plays' }
+            }, plotlyConfig);
+        }
+
+        function loadAtlasWeekly() {
+            Plotly.newPlot('atlasWeekly', [{
+                x: atlasData.weeklyLabels,
+                y: atlasData.weeklyData,
+                type: 'bar',
+                marker: { color: '#1DB954' }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, title: 'Week' },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Atlas Plays' }
+            }, plotlyConfig);
+        }
+
+        function loadTransitionMatrix() {
+            Plotly.newPlot('transitionMatrix', [{
+                z: transitionData.matrix,
+                x: transitionData.tracks,
+                y: transitionData.tracks,
+                type: 'heatmap',
+                colorscale: [[0, '#0a0a0f'], [0.1, '#1a1a2e'], [0.3, '#1DB954'], [1, '#4ade80']],
+                showscale: true,
+                colorbar: { tickfont: { color: '#8b949e' } }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, tickangle: -45, tickfont: { size: 9 } },
+                yaxis: { ...plotlyLayout.yaxis, tickfont: { size: 9 } }
+            }, plotlyConfig);
+        }
+
+        function loadConnectionStrength() {
+            const tracks = Object.keys(transitionData.totals);
+            const values = Object.values(transitionData.totals);
+            Plotly.newPlot('connectionStrength', [{
+                y: tracks.reverse(),
+                x: values.reverse(),
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#1DB954' }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, title: 'Total Transitions' },
+                margin: { ...plotlyLayout.margin, l: 130 }
+            }, plotlyConfig);
+        }
+
+        function loadEngagementFunnel() {
+            Plotly.newPlot('engagementFunnel', [{
+                type: 'funnel',
+                y: ['Total Plays', 'Completed', 'Full Listen', 'Repeat Plays'],
+                x: [2507, 1880, 1128, 627],
+                textinfo: 'value+percent initial',
+                marker: { color: ['#1DB954', '#17a34a', '#15803d', '#166534'] },
+                connector: { fillcolor: 'rgba(29, 185, 84, 0.1)' }
+            }], {
+                ...plotlyLayout,
+                funnelmode: 'stack'
+            }, plotlyConfig);
+        }
+
+        function loadTrackPerformance() {
+            Plotly.newPlot('trackPerformance', [{
+                x: engagementData.tracks.map(t => t.plays),
+                y: engagementData.tracks.map(t => t.skip_rate),
+                text: engagementData.tracks.map(t => t.track),
+                type: 'scatter',
+                mode: 'markers+text',
+                textposition: 'top center',
+                textfont: { size: 9 },
+                marker: {
+                    size: engagementData.tracks.map(t => Math.sqrt(t.plays) * 2),
+                    color: '#1DB954'
+                }
+            }], {
+                ...plotlyLayout,
+                xaxis: { ...plotlyLayout.xaxis, title: 'Total Plays' },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Skip Rate %' }
+            }, plotlyConfig);
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            loadOctoberTimeline();
+            loadHourlyChart();
+            loadWeekdayChart();
+            loadTopTracksChart();
+            loadAtlasMonthly();
+            loadAtlasWeekly();
+            loadTransitionMatrix();
+            loadConnectionStrength();
+            loadEngagementFunnel();
+            loadTrackPerformance();
+            console.log('Mega Dashboard loaded - 1+1=1');
+        });
+
+        // Nav active state
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
