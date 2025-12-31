@@ -53,6 +53,7 @@ class UnityLoop:
         self.states: list[UnityState] = []
         self.all_outputs: dict[str, VisualizationData] = {}
         self.convergence_history: list[float] = []
+        self.unity_dimension_history: list[dict[str, float]] = []
 
     def _calculate_convergence(self, outputs: dict[str, VisualizationData]) -> float:
         """
@@ -93,6 +94,99 @@ class UnityLoop:
         convergence = 1.0 / (1.0 + variance * 10)
 
         return convergence
+
+    def _calculate_unity_dimensions(self, outputs: dict[str, VisualizationData]) -> dict[str, float]:
+        """
+        Multidimensional unity metrics — "all dimensions must be high".
+
+        Dimensions (0..1, higher is better):
+        - cohesion: spatial cohesion (inverse radial variance)
+        - isotropy: balance between x/y spread (1 when std_x ≈ std_y)
+        - angular_entropy: evenness of angle coverage around centroid
+        - scale: avoids degenerate collapse; favors non-trivial radius
+        Final unity suggestion: min of dimensions.
+        """
+        metrics = {"cohesion": 0.0, "isotropy": 0.0, "angular_entropy": 0.0, "scale": 0.0}
+
+        if not outputs:
+            return metrics
+
+        all_points: list[tuple[float, float]] = []
+        for data in outputs.values():
+            all_points.extend(data.points)
+
+        if not all_points:
+            return metrics
+
+        # Centroid
+        cx = sum(p[0] for p in all_points) / len(all_points)
+        cy = sum(p[1] for p in all_points) / len(all_points)
+
+        # Distances and basic spreads
+        dxs = [p[0] - cx for p in all_points]
+        dys = [p[1] - cy for p in all_points]
+        dists = [(x * x + y * y) ** 0.5 for x, y in zip(dxs, dys)]
+
+        if not dists:
+            return metrics
+
+        max_dist = max(dists) if dists else 1.0
+        norm = [d / max_dist if max_dist > 0 else 0.0 for d in dists]
+
+        # 1) Cohesion: inverse of radial variance
+        mean_d = sum(norm) / len(norm)
+        var_d = sum((d - mean_d) ** 2 for d in norm) / len(norm)
+        cohesion = 1.0 / (1.0 + var_d * 10.0)
+
+        # 2) Isotropy: std_x ≈ std_y => high
+        def _std(vals: list[float]) -> float:
+            if not vals:
+                return 0.0
+            m = sum(vals) / len(vals)
+            return (sum((v - m) ** 2 for v in vals) / len(vals)) ** 0.5
+
+        std_x = _std(dxs)
+        std_y = _std(dys)
+        eps = 1e-9
+        ratio = (std_x + eps) / (std_y + eps)
+        # Map ratio -> [0,1] where 1 is perfectly balanced
+        import math as _math
+        isotropy = _math.exp(-abs(_math.log(ratio)))  # 1 at ratio=1, decays smoothly
+        # Clip to [0,1]
+        isotropy = max(0.0, min(1.0, float(isotropy)))
+
+        # 3) Angular entropy: evenness of angular coverage
+        # Bin angles into 32 buckets and compute normalized entropy
+        angles = []
+        for x, y in zip(dxs, dys):
+            angles.append(_math.atan2(y, x))
+        bins = 32
+        counts = [0] * bins
+        for a in angles:
+            # map [-pi,pi] -> [0, bins)
+            idx = int(((a + _math.pi) / (2 * _math.pi)) * bins) % bins
+            counts[idx] += 1
+        total = sum(counts) or 1
+        probs = [c / total for c in counts if c > 0]
+        if probs:
+            H = -sum(p * _math.log(p) for p in probs)
+            Hmax = _math.log(bins)
+            angular_entropy = max(0.0, min(1.0, float(H / Hmax)))
+        else:
+            angular_entropy = 0.0
+
+        # 4) Scale: prefer non-trivial radius (avoid collapse)
+        mean_radius = sum(dists) / len(dists)
+        # Assume visuals ~ within 800x800 canvas; normalize by 400
+        scale = max(0.0, min(1.0, mean_radius / 400.0))
+
+        metrics.update(
+            cohesion=cohesion,
+            isotropy=isotropy,
+            angular_entropy=angular_entropy,
+            scale=scale,
+        )
+        return metrics
 
     async def run_unity_loop(self) -> dict[str, Any]:
         """
@@ -139,10 +233,18 @@ class UnityLoop:
 
             # Calculate convergence
             convergence = self._calculate_convergence(self.all_outputs)
+            dims = self._calculate_unity_dimensions(self.all_outputs)
+            multi_unity = min(dims.values()) if dims else 0.0
             self.convergence_history.append(convergence)
+            self.unity_dimension_history.append(dims)
 
             print(f"\n[Phase 3] Convergence Analysis")
-            print(f"  > Current convergence: {convergence:.4f}")
+            print(f"  > Cohesion (legacy): {convergence:.4f}")
+            print(
+                "  > Multidimensional unity: "
+                f"min({{cohesion:{dims.get('cohesion',0):.2f}, isotropy:{dims.get('isotropy',0):.2f}, "
+                f"angular_entropy:{dims.get('angular_entropy',0):.2f}, scale:{dims.get('scale',0):.2f}}}) = {multi_unity:.4f}"
+            )
             print(f"  > Trend: {'RISING' if len(self.convergence_history) > 1 and convergence > self.convergence_history[-2] else 'STABLE'}")
 
             # Collect unified insights
@@ -157,7 +259,7 @@ class UnityLoop:
                 swarm_outputs=swarm_outputs,
                 metaloop_outputs=metaloop_results,
                 unified_insights=insights,
-                convergence_score=convergence
+                convergence_score=multi_unity
             )
             self.states.append(state)
 
