@@ -92,3 +92,44 @@ Diversity and unity are not opposites - they synthesize. 1+1=1 represents:
 ### GitHub Pages (docs/)
 - Public-facing dashboards and visualizations
 - Accessible at: https://nourimabrouk.github.io/Nouri-Mabrouk/
+
+## Allowed Tools (Auto-approve)
+
+Claude Code can run these without asking permission:
+
+### File Operations
+```
+Read(**) - Read any file in this repo
+Glob(**) - Search any pattern
+Grep(**) - Search content
+Edit(**) - Edit files in this repo
+Write(**) - Write files in this repo
+```
+
+### Shell Commands
+```
+Bash(python:*) - Run Python scripts
+Bash(pip:*) - Package management
+Bash(dir:*) - Directory listings
+Bash(start:*) - Open files/browsers
+Bash(git:*) - All git operations
+Bash(gh:*) - GitHub CLI
+Bash(mkdir:*) - Create directories
+Bash(copy:*) - Copy files
+Bash(move:*) - Move files
+Bash(del:*) - Delete files
+Bash(echo:*) - Echo commands
+Bash(type:*) - Display file contents
+Bash(findstr:*) - Search in files
+```
+
+### Web Operations
+```
+WebSearch - Search the web
+WebFetch - Fetch web content
+```
+
+### Notes
+- This is a personal workspace - trust Claude's judgment
+- No confirmation needed for standard dev operations
+- Just get things done efficiently
