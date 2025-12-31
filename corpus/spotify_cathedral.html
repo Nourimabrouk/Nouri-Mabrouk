@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOTIFY CATHEDRAL | 14 Years of Sound | 2011-2025</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;900&family=Playfair+Display:wght@400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --spotify-green: #1DB954;
+            --spotify-dark: #0a0a0a;
+            --spotify-card: #151515;
+            --spotify-lighter: #252525;
+            --pommelien-purple: #9B59B6;
+            --pommelien-pink: #E91E63;
+            --pommelien-gradient: linear-gradient(135deg, #9B59B6 0%, #E91E63 50%, #FF6B6B 100%);
+            --gold: #FFD700;
+            --text: #FFFFFF;
+            --text-dim: #888888;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--spotify-dark);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================ */
+        /* HERO SECTION                                 */
+        /* ============================================ */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(29, 185, 84, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(155, 89, 182, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(233, 30, 99, 0.1) 0%, transparent 60%);
+            animation: heroPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes heroPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--spotify-green);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(odd) { background: var(--pommelien-purple); }
+        .particle:nth-child(3n) { background: var(--pommelien-pink); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-pretitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            color: var(--spotify-green);
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.5s;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 12vw, 10rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 0.9;
+            background: linear-gradient(135deg, #fff 0%, var(--spotify-green) 50%, var(--pommelien-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.8s;
+        }
+
+        .hero-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--text-dim);
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 1.1s;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mega-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 1.4s;
+        }
+
+        @media (max-width: 768px) {
+            .mega-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .mega-stat {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .mega-stat:hover {
+            transform: translateY(-5px);
+            border-color: var(--spotify-green);
+            box-shadow: 0 20px 40px rgba(29, 185, 84, 0.2);
+        }
+
+        .mega-stat .number {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(180deg, #fff 0%, var(--spotify-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .mega-stat .label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 0.5rem;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 2s;
+        }
+
+        .scroll-hint .arrow {
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* ============================================ */
+        /* MAIN CONTENT                                 */
+        /* ============================================ */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 8rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--spotify-green);
+            letter-spacing: 0.3em;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .chart-container {
+            background: var(--spotify-card);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+        }
+
+        @media (max-width: 500px) {
+            .chart-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ============================================ */
+        /* POMMELIEN SECTION                            */
+        /* ============================================ */
+        .pommelien-section {
+            position: relative;
+            padding: 6rem 0;
+            margin: 6rem 0;
+            overflow: hidden;
+        }
+
+        .pommelien-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--pommelien-gradient);
+            opacity: 0.1;
+        }
+
+        .pommelien-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(155, 89, 182, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(233, 30, 99, 0.3) 0%, transparent 50%);
+        }
+
+        .pommelien-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .pommelien-hero {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .pommelien-hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        .pommelien-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--pommelien-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            box-shadow:
+                0 0 60px rgba(155, 89, 182, 0.5),
+                0 0 120px rgba(233, 30, 99, 0.3);
+            animation: avatarGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 60px rgba(155, 89, 182, 0.5), 0 0 120px rgba(233, 30, 99, 0.3); }
+            50% { box-shadow: 0 0 80px rgba(155, 89, 182, 0.7), 0 0 160px rgba(233, 30, 99, 0.5); }
+        }
+
+        .pommelien-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .pommelien-tagline {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .pommelien-tagline span {
+            color: var(--pommelien-pink);
+        }
+
+        .pommelien-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .pommelien-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .pom-stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(155, 89, 182, 0.2);
+        }
+
+        .pom-stat .num {
+            font-size: 2.5rem;
+            font-weight: 900;
+            font-family: 'Space Mono', monospace;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pom-stat .lbl {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+        }
+
+        /* Track Rankings */
+        .track-rankings {
+            margin-top: 4rem;
+        }
+
+        .track-rankings h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .tracks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .track-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .track-card:hover {
+            background: rgba(155, 89, 182, 0.2);
+            border-color: var(--pommelien-purple);
+            transform: translateX(8px);
+        }
+
+        .track-rank {
+            font-size: 1.8rem;
+            font-weight: 900;
+            font-family: 'Space Mono', monospace;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-width: 50px;
+        }
+
+        .track-details {
+            flex: 1;
+        }
+
+        .track-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .track-meta {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .track-bar-container {
+            width: 80px;
+        }
+
+        .track-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .track-bar-fill {
+            height: 100%;
+            background: var(--pommelien-gradient);
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        /* ============================================ */
+        /* EVOLUTION TIMELINE                          */
+        /* ============================================ */
+        .evolution-section {
+            position: relative;
+        }
+
+        .timeline-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0;
+            margin-top: 3rem;
+        }
+
+        .year-block {
+            position: relative;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .year-block:first-child { border-left: none; }
+
+        .year-block:hover {
+            background: rgba(29, 185, 84, 0.1);
+        }
+
+        .year-block.highlight {
+            background: rgba(233, 30, 99, 0.1);
+        }
+
+        .year-block.highlight:hover {
+            background: rgba(233, 30, 99, 0.2);
+        }
+
+        .year-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .year-block.highlight .year-label {
+            color: var(--pommelien-pink);
+        }
+
+        .year-artist {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .year-plays {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--spotify-green);
+        }
+
+        .year-bar {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            background: var(--spotify-green);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .year-block.highlight .year-bar {
+            background: var(--pommelien-gradient);
+        }
+
+        /* ============================================ */
+        /* INSIGHTS CARDS                              */
+        /* ============================================ */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 900px) {
+            .insights-grid { grid-template-columns: 1fr; }
+        }
+
+        .insight-card {
+            background: var(--spotify-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            border-color: var(--spotify-green);
+            transform: translateY(-5px);
+        }
+
+        .insight-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--spotify-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ============================================ */
+        /* FOOTER                                      */
+        /* ============================================ */
+        footer {
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(29, 185, 84, 0.05) 100%);
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--spotify-green), var(--pommelien-purple), var(--pommelien-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .footer-tagline {
+            font-family: 'Space Mono', monospace;
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .footer-stat {
+            text-align: center;
+        }
+
+        .footer-stat .num {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .footer-stat .lbl {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .footer-date {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .footer-date span {
+            color: var(--spotify-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================ -->
+    <!-- HERO SECTION                                 -->
+    <!-- ============================================ -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="particles" id="particles"></div>
+
+        <div class="hero-content">
+            <p class="hero-pretitle">A Sonic Journey Through Time</p>
+            <h1>SPOTIFY<br>CATHEDRAL</h1>
+            <p class="hero-subtitle">14 Years of Sound | 2011 - 2025</p>
+
+            <div class="mega-stats">
+                <div class="mega-stat">
+                    <div class="number" data-target="141">0</div>
+                    <div class="label">Days of Music</div>
+                </div>
+                <div class="mega-stat">
+                    <div class="number" data-target="71894">0</div>
+                    <div class="label">Total Streams</div>
+                </div>
+                <div class="mega-stat">
+                    <div class="number" data-target="10068">0</div>
+                    <div class="label">Unique Artists</div>
+                </div>
+                <div class="mega-stat">
+                    <div class="number" data-target="25735">0</div>
+                    <div class="label">Unique Tracks</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-hint" onclick="document.getElementById('overview').scrollIntoView({behavior: 'smooth'})">
+            <span>Explore</span>
+            <span class="arrow">&#8595;</span>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- OVERVIEW SECTION                             -->
+    <!-- ============================================ -->
+    <div class="container" id="overview">
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">01</div>
+                <h2 class="section-title">The Artist Universe</h2>
+                <p class="section-subtitle">Every artist sized by their presence in your listening history. One name dominates them all.</p>
+            </div>
+
+            <div class="chart-container">
+                <div id="treemap" style="height: 600px;"></div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">&#127911;</div>
+                    <h3 class="insight-title">Peak Listening</h3>
+                    <div class="insight-value">20:00</div>
+                    <p class="insight-desc">Your most active listening hour. Evening sessions dominate, with 4,860 plays at 8 PM alone.</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">&#128197;</div>
+                    <h3 class="insight-title">Favorite Day</h3>
+                    <div class="insight-value">Friday</div>
+                    <p class="insight-desc">12,418 plays on Fridays. The weekend warmup is real.</p>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">&#127758;</div>
+                    <h3 class="insight-title">Home Base</h3>
+                    <div class="insight-value">97.5%</div>
+                    <p class="insight-desc">Streams from the Netherlands. With brief adventures to France, Japan, and Vietnam.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- POMMELIEN SECTION                            -->
+        <!-- ============================================ -->
+        <section class="pommelien-section">
+            <div class="pommelien-bg"></div>
+            <div class="pommelien-content">
+                <div class="pommelien-hero">
+                    <div class="pommelien-avatar">&#9829;</div>
+                    <div class="pommelien-info">
+                        <h2>POMMELIEN THIJS</h2>
+                        <p class="pommelien-tagline">First listen: <span>October 7, 2024</span> | From zero to #1 in <span>84 days</span></p>
+                        <div class="pommelien-stats-grid">
+                            <div class="pom-stat">
+                                <div class="num">2,630</div>
+                                <div class="lbl">Total Plays</div>
+                            </div>
+                            <div class="pom-stat">
+                                <div class="num">120h</div>
+                                <div class="lbl">5 Full Days</div>
+                            </div>
+                            <div class="pom-stat">
+                                <div class="num">50</div>
+                                <div class="lbl">Unique Tracks</div>
+                            </div>
+                            <div class="pom-stat">
+                                <div class="num">413</div>
+                                <div class="lbl">Atlas Plays</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="background: rgba(0,0,0,0.3);">
+                    <div id="pommelien-journey" style="height: 350px;"></div>
+                </div>
+
+                <div class="track-rankings">
+                    <h3>The Sacred Tracks</h3>
+                    <div class="tracks-grid" id="pommelien-tracks"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- LISTENING PATTERNS                          -->
+        <!-- ============================================ -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">02</div>
+                <h2 class="section-title">When You Listen</h2>
+                <p class="section-subtitle">The rhythm of your days, mapped through music.</p>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div id="hourly-chart" style="height: 400px;"></div>
+                </div>
+                <div class="chart-container">
+                    <div id="weekday-chart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- EVOLUTION SECTION                           -->
+        <!-- ============================================ -->
+        <section class="section evolution-section">
+            <div class="section-header">
+                <div class="section-number">03</div>
+                <h2 class="section-title">The Evolution</h2>
+                <p class="section-subtitle">From electronic rock in 2011 to Dutch pop in 2025. A journey through genres and emotions.</p>
+            </div>
+
+            <div class="chart-container">
+                <div id="yearly-evolution" style="height: 400px;"></div>
+            </div>
+
+            <div class="timeline-visual" id="timeline"></div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TOP TRACKS                                  -->
+        <!-- ============================================ -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <h2 class="section-title">Most Played Tracks</h2>
+                <p class="section-subtitle">The songs that defined your years.</p>
+            </div>
+
+            <div class="chart-container">
+                <div id="top-tracks" style="height: 700px;"></div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- MONTHLY JOURNEY                             -->
+        <!-- ============================================ -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">05</div>
+                <h2 class="section-title">The Monthly Journey</h2>
+                <p class="section-subtitle">Watch the Pommelien phenomenon unfold in October 2024.</p>
+            </div>
+
+            <div class="chart-container">
+                <div id="monthly-journey" style="height: 450px;"></div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PLATFORM & GEOGRAPHY                        -->
+        <!-- ============================================ -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">06</div>
+                <h2 class="section-title">Platform & Geography</h2>
+                <p class="section-subtitle">Where and how you listen.</p>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div id="platform-chart" style="height: 400px;"></div>
+                </div>
+                <div class="chart-container">
+                    <div id="geography-chart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FOOTER                                       -->
+    <!-- ============================================ -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">1+1=1</div>
+            <p class="footer-tagline">Spotify Cathedral | The Sound of a Life</p>
+
+            <div class="footer-stats">
+                <div class="footer-stat">
+                    <div class="num">3,250</div>
+                    <div class="lbl">Hours of Music</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="num">137.7</div>
+                    <div class="lbl">Hours of Podcasts</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="num">14</div>
+                    <div class="lbl">Years Documented</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="num">1</div>
+                    <div class="lbl">Sonic Journey</div>
+                </div>
+            </div>
+
+            <p class="footer-date">Generated <span>December 31, 2025</span> | The Waking of a World</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const colors = {
+            green: '#1DB954',
+            purple: '#9B59B6',
+            pink: '#E91E63',
+            gold: '#FFD700',
+            blue: '#3498DB',
+            orange: '#E67E22',
+            dark: '#0a0a0a',
+            card: '#151515'
+        };
+
+        const plotlyConfig = { displayModeBar: false, responsive: true };
+
+        const darkLayout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: '#fff', family: 'Inter, sans-serif' },
+            margin: { t: 60, r: 30, b: 60, l: 70 },
+            xaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)' },
+            yaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)' }
+        };
+
+        // ============================================
+        // PARTICLES
+        // ============================================
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (10 + Math.random() * 20) + 's';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // ============================================
+        // ANIMATED COUNTERS
+        // ============================================
+        const animateCounters = () => {
+            document.querySelectorAll('.number[data-target]').forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                const duration = 2000;
+                const start = performance.now();
+
+                const animate = (now) => {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    counter.textContent = Math.floor(target * eased).toLocaleString();
+                    if (progress < 1) requestAnimationFrame(animate);
+                };
+                requestAnimationFrame(animate);
+            });
+        };
+
+        // Trigger counters when visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.disconnect();
+                }
+            });
+        });
+        observer.observe(document.querySelector('.mega-stats'));
+
+        // ============================================
+        // DATA
+        // ============================================
+        const topArtists = [
+            { name: 'Pommelien Thijs', plays: 2630, hours: 120 },
+            { name: 'Taylor Swift', plays: 1074, hours: 55 },
+            { name: 'Herman van Veen', plays: 897, hours: 24 },
+            { name: 'Fleetwood Mac', plays: 699, hours: 24 },
+            { name: 'Roxy Dekker', plays: 660, hours: 25 },
+            { name: 'Luke Combs', plays: 644, hours: 31 },
+            { name: 'Boudewijn de Groot', plays: 638, hours: 21 },
+            { name: 'Metejoor', plays: 622, hours: 31 },
+            { name: 'Lewis Capaldi', plays: 582, hours: 29 },
+            { name: 'Froukje', plays: 543, hours: 21 },
+            { name: 'Suzan & Freek', plays: 454, hours: 19 },
+            { name: 'Kelsea Ballerini', plays: 435, hours: 20 },
+            { name: 'Acda en de Munnik', plays: 405, hours: 14 },
+            { name: 'Jacques Brel', plays: 396, hours: 16 },
+            { name: 'John Prine', plays: 391, hours: 13 },
+            { name: 'Hannah Mae', plays: 388, hours: 17 },
+            { name: 'Miss Montreal', plays: 334, hours: 14 },
+            { name: 'Veldhuis & Kemper', plays: 315, hours: 11 },
+            { name: 'Jordan Davis', plays: 287, hours: 12 },
+            { name: 'Marco Borsato', plays: 264, hours: 15 }
+        ];
+
+        const pommelienTracks = [
+            { name: 'Atlas', plays: 413, hours: 19.0 },
+            { name: 'Wie we morgen zijn', plays: 115, hours: 5.6 },
+            { name: 'Roekeloos (feat. WIES)', plays: 112, hours: 4.7 },
+            { name: 'Het beste moet nog komen', plays: 108, hours: 4.6 },
+            { name: 'Doen of Zijn', plays: 104, hours: 4.3 },
+            { name: 'Erop Of Eronder', plays: 100, hours: 4.1 },
+            { name: 'Koning minimaliseren', plays: 98, hours: 4.1 },
+            { name: 'Wat Een Idee!?', plays: 96, hours: 4.1 },
+            { name: 'Hypothetisch', plays: 91, hours: 4.1 },
+            { name: 'Bel me als je thuis bent', plays: 90, hours: 4.9 },
+            { name: 'Entertainment', plays: 83, hours: 3.7 },
+            { name: 'Tegenwoordige Tijd', plays: 83, hours: 4.8 }
+        ];
+
+        const yearlyData = [
+            { year: 2011, plays: 275, artist: 'Muse' },
+            { year: 2012, plays: 237, artist: 'Amos Lee' },
+            { year: 2013, plays: 150, artist: 'Passenger' },
+            { year: 2017, plays: 670, artist: 'Daniel Balavoine' },
+            { year: 2018, plays: 6219, artist: 'Herman van Veen' },
+            { year: 2019, plays: 3418, artist: 'Veldhuis & Kemper' },
+            { year: 2020, plays: 8884, artist: 'Fleetwood Mac' },
+            { year: 2021, plays: 11982, artist: 'Luke Combs' },
+            { year: 2022, plays: 4841, artist: 'Yao Chen' },
+            { year: 2023, plays: 8294, artist: 'Foreigner' },
+            { year: 2024, plays: 10257, artist: 'Lewis Capaldi' },
+            { year: 2025, plays: 16667, artist: 'Pommelien Thijs' }
+        ];
+
+        const hourlyData = [2210, 1478, 1160, 1018, 860, 999, 1379, 1789, 2547, 2899, 3420, 3381, 3688, 3823, 4245, 4526, 4420, 3925, 4012, 4343, 4860, 4142, 3878, 2892];
+
+        const weekdayData = [
+            { day: 'Monday', plays: 8282 },
+            { day: 'Tuesday', plays: 8749 },
+            { day: 'Wednesday', plays: 10622 },
+            { day: 'Thursday', plays: 11169 },
+            { day: 'Friday', plays: 12418 },
+            { day: 'Saturday', plays: 11583 },
+            { day: 'Sunday', plays: 9071 }
+        ];
+
+        const topTracks = [
+            { name: 'Atlas - Pommelien Thijs', plays: 413, hours: 19.0 },
+            { name: '1 Op Een Miljoen - Metejoor', plays: 216, hours: 11.0 },
+            { name: 'First Light - Yao Chen', plays: 205, hours: 0.2 },
+            { name: 'Second Hand News - Fleetwood Mac', plays: 156, hours: 1.6 },
+            { name: 'Hooked On A Feeling - Blue Swede', plays: 139, hours: 4.5 },
+            { name: "When I'm Gone - Phil Ochs", plays: 127, hours: 5.9 },
+            { name: "I'm On Fire - Bruce Springsteen", plays: 127, hours: 3.7 },
+            { name: 'We Are The People - Martin Garrix', plays: 127, hours: 3.6 },
+            { name: 'Against All Odds - Phil Collins', plays: 117, hours: 5.0 },
+            { name: 'PING PONG - HyunA & DAWN', plays: 116, hours: 4.5 },
+            { name: 'Wie we morgen zijn - Pommelien Thijs', plays: 115, hours: 5.6 },
+            { name: 'Ne me quitte pas - Jacques Brel', plays: 113, hours: 4.2 },
+            { name: 'Losing My Religion - R.E.M.', plays: 113, hours: 6.2 },
+            { name: 'Eigen Schuld - Metejoor', plays: 113, hours: 5.5 },
+            { name: 'Roekeloos - Pommelien Thijs', plays: 112, hours: 4.7 },
+            { name: 'Het beste moet nog komen - Pommelien Thijs', plays: 108, hours: 4.6 },
+            { name: 'Jouw Idee - Roxy Dekker', plays: 105, hours: 5.2 },
+            { name: 'Die From A Broken Heart - Maddie & Tae', plays: 104, hours: 4.3 },
+            { name: 'I Want to Know What Love Is - Foreigner', plays: 104, hours: 6.1 },
+            { name: 'Schreeuwen - Miss Montreal', plays: 104, hours: 4.3 }
+        ];
+
+        const monthlyData = [
+            { month: '2024-01', hours: 10.9 }, { month: '2024-02', hours: 17.1 },
+            { month: '2024-03', hours: 15.3 }, { month: '2024-04', hours: 25.5 },
+            { month: '2024-05', hours: 8.0 }, { month: '2024-06', hours: 21.8 },
+            { month: '2024-07', hours: 22.1 }, { month: '2024-08', hours: 31.0 },
+            { month: '2024-09', hours: 39.6 }, { month: '2024-10', hours: 102.4 },
+            { month: '2024-11', hours: 60.2 }, { month: '2024-12', hours: 142.0 },
+            { month: '2025-01', hours: 128.9 }, { month: '2025-02', hours: 34.8 },
+            { month: '2025-03', hours: 89.0 }, { month: '2025-04', hours: 122.7 },
+            { month: '2025-05', hours: 121.6 }, { month: '2025-06', hours: 10.5 },
+            { month: '2025-07', hours: 40.8 }, { month: '2025-08', hours: 73.5 },
+            { month: '2025-09', hours: 12.1 }, { month: '2025-10', hours: 161.4 }
+        ];
+
+        // ============================================
+        // CHARTS
+        // ============================================
+
+        // TREEMAP
+        Plotly.newPlot('treemap', [{
+            type: 'treemap',
+            labels: topArtists.map(a => a.name),
+            parents: topArtists.map(() => ''),
+            values: topArtists.map(a => a.plays),
+            text: topArtists.map(a => `${a.plays.toLocaleString()} plays<br>${a.hours}h listening`),
+            textinfo: 'label+text',
+            textfont: { size: 13, family: 'Inter' },
+            marker: {
+                colors: topArtists.map((a, i) => {
+                    if (a.name === 'Pommelien Thijs') return colors.pink;
+                    if (a.name === 'Taylor Swift') return '#b8860b';
+                    const hue = (120 + i * 15) % 360;
+                    return `hsl(${hue}, 60%, 45%)`;
+                }),
+                line: { width: 2, color: colors.dark }
+            },
+            hovertemplate: '<b>%{label}</b><br>%{value:,} plays<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: '', font: { size: 1 } }
+        }, plotlyConfig);
+
+        // POMMELIEN JOURNEY
+        Plotly.newPlot('pommelien-journey', [{
+            x: ['Oct 24', 'Nov 24', 'Dec 24', 'Jan 25', 'Feb 25', 'Mar 25', 'Apr 25', 'May 25', 'Jun 25', 'Jul 25', 'Aug 25', 'Sep 25', 'Oct 25'],
+            y: [580, 420, 510, 320, 180, 150, 140, 130, 50, 60, 40, 20, 30],
+            type: 'bar',
+            marker: {
+                color: [580, 420, 510, 320, 180, 150, 140, 130, 50, 60, 40, 20, 30].map(v => {
+                    const intensity = v / 600;
+                    return `rgba(233, 30, 99, ${0.3 + intensity * 0.7})`;
+                }),
+                line: { color: colors.purple, width: 1 }
+            },
+            hovertemplate: '<b>%{x}</b><br>%{y} plays<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'The Pommelien Journey', font: { size: 18, color: colors.pink } },
+            yaxis: { ...darkLayout.yaxis, title: 'Plays' },
+            xaxis: { ...darkLayout.xaxis, tickangle: -45 }
+        }, plotlyConfig);
+
+        // POMMELIEN TRACKS
+        const tracksContainer = document.getElementById('pommelien-tracks');
+        const maxPlays = pommelienTracks[0].plays;
+        pommelienTracks.forEach((track, i) => {
+            const pct = (track.plays / maxPlays) * 100;
+            tracksContainer.innerHTML += `
+                <div class="track-card">
+                    <div class="track-rank">${i + 1}</div>
+                    <div class="track-details">
+                        <div class="track-name">${track.name}</div>
+                        <div class="track-meta">${track.plays} plays &bull; ${track.hours}h</div>
+                    </div>
+                    <div class="track-bar-container">
+                        <div class="track-bar">
+                            <div class="track-bar-fill" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // HOURLY CHART
+        Plotly.newPlot('hourly-chart', [{
+            x: Array.from({length: 24}, (_, i) => `${i}:00`),
+            y: hourlyData,
+            type: 'bar',
+            marker: {
+                color: hourlyData.map(v => {
+                    const intensity = v / 5000;
+                    return `rgba(29, 185, 84, ${0.3 + intensity * 0.7})`;
+                }),
+                line: { color: colors.green, width: 1 }
+            },
+            hovertemplate: '<b>%{x}</b><br>%{y:,} plays<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'Listening by Hour', font: { size: 18 } },
+            yaxis: { ...darkLayout.yaxis, title: 'Plays' },
+            xaxis: { ...darkLayout.xaxis, tickangle: -45 }
+        }, plotlyConfig);
+
+        // WEEKDAY CHART
+        Plotly.newPlot('weekday-chart', [{
+            type: 'scatterpolar',
+            r: [...weekdayData.map(d => d.plays), weekdayData[0].plays],
+            theta: [...weekdayData.map(d => d.day), weekdayData[0].day],
+            fill: 'toself',
+            fillcolor: 'rgba(29, 185, 84, 0.2)',
+            line: { color: colors.green, width: 3 },
+            marker: { size: 10, color: colors.green },
+            hovertemplate: '<b>%{theta}</b><br>%{r:,} plays<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'Listening by Weekday', font: { size: 18 } },
+            polar: {
+                bgcolor: 'rgba(0,0,0,0)',
+                radialaxis: { visible: true, gridcolor: 'rgba(255,255,255,0.1)', tickfont: { color: '#888' } },
+                angularaxis: { gridcolor: 'rgba(255,255,255,0.1)', tickfont: { size: 12 } }
+            }
+        }, plotlyConfig);
+
+        // YEARLY EVOLUTION
+        Plotly.newPlot('yearly-evolution', [{
+            x: yearlyData.map(y => y.year),
+            y: yearlyData.map(y => y.plays),
+            type: 'scatter',
+            mode: 'lines+markers+text',
+            fill: 'tozeroy',
+            fillcolor: 'rgba(29, 185, 84, 0.15)',
+            line: { color: colors.green, width: 4, shape: 'spline' },
+            marker: {
+                size: 14,
+                color: yearlyData.map(y => y.year === 2025 ? colors.pink : colors.green),
+                line: { color: '#fff', width: 2 }
+            },
+            text: yearlyData.map(y => y.artist),
+            textposition: 'top center',
+            textfont: { size: 10, color: '#888' },
+            hovertemplate: '<b>%{x}</b><br>%{y:,} plays<br>Top: %{text}<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'Streams Per Year', font: { size: 18 } },
+            yaxis: { ...darkLayout.yaxis, title: 'Plays' },
+            xaxis: { ...darkLayout.xaxis, dtick: 1, title: '' },
+            annotations: [{
+                x: 2025, y: 16667,
+                text: '<b>POMMELIEN ERA</b>',
+                showarrow: true, arrowhead: 2, arrowsize: 1, arrowcolor: colors.pink,
+                font: { color: colors.pink, size: 14 },
+                ax: 0, ay: -50
+            }]
+        }, plotlyConfig);
+
+        // TIMELINE
+        const timelineContainer = document.getElementById('timeline');
+        const maxYearPlays = Math.max(...yearlyData.map(y => y.plays));
+        yearlyData.forEach(y => {
+            const barHeight = (y.plays / maxYearPlays) * 100;
+            const isHighlight = y.year === 2025;
+            timelineContainer.innerHTML += `
+                <div class="year-block ${isHighlight ? 'highlight' : ''}">
+                    <div class="year-label">${y.year}</div>
+                    <div class="year-artist">${y.artist}</div>
+                    <div class="year-plays">${y.plays.toLocaleString()}</div>
+                    <div class="year-bar" style="height: ${barHeight}px;"></div>
+                </div>
+            `;
+        });
+
+        // TOP TRACKS
+        Plotly.newPlot('top-tracks', [{
+            y: topTracks.map(t => t.name).reverse(),
+            x: topTracks.map(t => t.plays).reverse(),
+            type: 'bar',
+            orientation: 'h',
+            marker: {
+                color: topTracks.map(t => t.name.includes('Pommelien') ? colors.pink : colors.green).reverse(),
+                line: { color: 'rgba(255,255,255,0.1)', width: 1 }
+            },
+            text: topTracks.map(t => `${t.plays} plays`).reverse(),
+            textposition: 'outside',
+            textfont: { size: 11 },
+            hovertemplate: '<b>%{y}</b><br>%{x} plays<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: '', font: { size: 1 } },
+            xaxis: { ...darkLayout.xaxis, title: 'Plays' },
+            yaxis: { ...darkLayout.yaxis, tickfont: { size: 11 } },
+            margin: { ...darkLayout.margin, l: 280, r: 80 }
+        }, plotlyConfig);
+
+        // MONTHLY JOURNEY
+        Plotly.newPlot('monthly-journey', [{
+            x: monthlyData.map(m => m.month),
+            y: monthlyData.map(m => m.hours),
+            type: 'scatter',
+            mode: 'lines+markers',
+            fill: 'tozeroy',
+            fillcolor: 'rgba(155, 89, 182, 0.2)',
+            line: { color: colors.purple, width: 4, shape: 'spline' },
+            marker: {
+                size: 12,
+                color: monthlyData.map(m => m.hours > 100 ? colors.pink : colors.purple),
+                line: { color: '#fff', width: 2 }
+            },
+            hovertemplate: '<b>%{x}</b><br>%{y:.1f} hours<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'Monthly Listening Hours', font: { size: 18 } },
+            yaxis: { ...darkLayout.yaxis, title: 'Hours' },
+            xaxis: { ...darkLayout.xaxis, tickangle: -45 },
+            shapes: [{
+                type: 'line',
+                x0: '2024-10', x1: '2024-10',
+                y0: 0, y1: 180,
+                line: { color: colors.pink, width: 3, dash: 'dash' }
+            }],
+            annotations: [{
+                x: '2024-10', y: 140,
+                text: '<b>POMMELIEN<br>DISCOVERY</b>',
+                showarrow: false,
+                font: { color: colors.pink, size: 13 }
+            }]
+        }, plotlyConfig);
+
+        // PLATFORM CHART
+        Plotly.newPlot('platform-chart', [{
+            type: 'pie',
+            labels: ['Windows', 'Android', 'Cast', 'Other'],
+            values: [35522, 26369, 1138, 8865],
+            hole: 0.55,
+            marker: {
+                colors: [colors.blue, colors.green, colors.orange, colors.purple],
+                line: { color: colors.dark, width: 2 }
+            },
+            textinfo: 'label+percent',
+            textfont: { size: 13 },
+            hovertemplate: '<b>%{label}</b><br>%{value:,} plays<br>%{percent}<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'Platform Distribution', font: { size: 18 } },
+            annotations: [{
+                text: '<b>71,894</b><br>streams',
+                x: 0.5, y: 0.5,
+                font: { size: 16, color: '#fff' },
+                showarrow: false
+            }],
+            showlegend: false
+        }, plotlyConfig);
+
+        // GEOGRAPHY CHART
+        Plotly.newPlot('geography-chart', [{
+            type: 'pie',
+            labels: ['Netherlands', 'France', 'Japan', 'Vietnam', 'Other'],
+            values: [70130, 955, 227, 138, 444],
+            hole: 0.55,
+            marker: {
+                colors: ['#FF6B35', '#3498DB', '#E74C3C', '#9B59B6', '#95A5A6'],
+                line: { color: colors.dark, width: 2 }
+            },
+            textinfo: 'label+percent',
+            textfont: { size: 13 },
+            hovertemplate: '<b>%{label}</b><br>%{value:,} plays<extra></extra>'
+        }], {
+            ...darkLayout,
+            title: { text: 'Geography', font: { size: 18 } },
+            annotations: [{
+                text: '<b>97.5%</b><br>Netherlands',
+                x: 0.5, y: 0.5,
+                font: { size: 16, color: '#FF6B35' },
+                showarrow: false
+            }],
+            showlegend: false
+        }, plotlyConfig);
+
+        // Smooth reveal on scroll
+        const revealElements = document.querySelectorAll('.section, .chart-container');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.8s ease';
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+</html>

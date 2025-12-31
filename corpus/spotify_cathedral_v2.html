@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE POMMELIEN EFFECT | A Spotify Story</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-void: #000000;
+            --bg-deep: #0a0a0f;
+            --pommelien-pink: #E91E63;
+            --pommelien-purple: #9C27B0;
+            --pommelien-gradient: linear-gradient(135deg, #E91E63 0%, #9C27B0 50%, #673AB7 100%);
+            --spotify-green: #1DB954;
+            --gold: #FFD700;
+            --text: #ffffff;
+            --text-dim: #666677;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: PRELOADER
+        ═══════════════════════════════════════════════════════════════ */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-void);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: NAVIGATION
+        ═══════════════════════════════════════════════════════════════ */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-progress {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 1px;
+            overflow: hidden;
+        }
+
+        .nav-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--pommelien-gradient);
+            border-radius: 1px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: HERO - THE OPENING
+        ═══════════════════════════════════════════════════════════════ */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 1200px;
+            padding: 2rem;
+        }
+
+        .hero-overline {
+            font-size: 0.75rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+            opacity: 0;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 15vw, 12rem);
+            font-weight: 900;
+            line-height: 0.85;
+            margin-bottom: 1rem;
+            opacity: 0;
+        }
+
+        .hero-title .line1 {
+            display: block;
+            background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title .line2 {
+            display: block;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-style: italic;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--text-dim);
+            margin-top: 2rem;
+            opacity: 0;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 4rem;
+            opacity: 0;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .hero-stat-number.green { color: var(--spotify-green); }
+        .hero-stat-number.pink { color: var(--pommelien-pink); }
+        .hero-stat-number.gold { color: var(--gold); }
+
+        .hero-stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(180deg, var(--pommelien-pink) 0%, transparent 100%);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.6); opacity: 0.5; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: THE BEFORE (WANDERING YEARS)
+        ═══════════════════════════════════════════════════════════════ */
+        .section-before {
+            min-height: 100vh;
+            padding: 10vh 5vw;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .chapter-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--pommelien-pink);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+
+        .section-prose {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin-bottom: 4rem;
+        }
+
+        .timeline-river {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            padding: 2rem 0;
+            scrollbar-width: none;
+        }
+
+        .timeline-river::-webkit-scrollbar {
+            display: none;
+        }
+
+        .year-stone {
+            flex: 0 0 auto;
+            width: 120px;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+            opacity: 0.4;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+
+        .year-stone:hover {
+            opacity: 1;
+        }
+
+        .year-stone::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 0;
+            background: var(--spotify-green);
+            border-radius: 2px;
+            transition: height 0.5s ease;
+        }
+
+        .year-stone:hover::after {
+            height: 40px;
+        }
+
+        .year-stone.active {
+            opacity: 1;
+        }
+
+        .year-stone.pommelien-era {
+            opacity: 1;
+        }
+
+        .year-stone.pommelien-era::after {
+            background: var(--pommelien-gradient);
+            height: 80px;
+        }
+
+        .year-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .year-artist {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .year-plays {
+            font-size: 0.65rem;
+            color: var(--spotify-green);
+            margin-top: 0.25rem;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: THE DISCOVERY
+        ═══════════════════════════════════════════════════════════════ */
+        .section-discovery {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10vh 5vw;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discovery-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(233, 30, 99, 0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .section-discovery.active .discovery-bg {
+            opacity: 1;
+        }
+
+        .discovery-date {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1rem, 3vw, 2rem);
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: var(--pommelien-pink);
+            margin-bottom: 2rem;
+            opacity: 0;
+        }
+
+        .discovery-time {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+
+        .discovery-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 20vw, 15rem);
+            font-weight: 900;
+            line-height: 0.9;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .discovery-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-top: 2rem;
+            opacity: 0;
+        }
+
+        .discovery-subtitle em {
+            color: var(--pommelien-pink);
+            font-style: normal;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: THE OBSESSION
+        ═══════════════════════════════════════════════════════════════ */
+        .section-obsession {
+            min-height: 150vh;
+            padding: 10vh 5vw;
+            position: relative;
+        }
+
+        .obsession-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .obsession-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .obsession-left {
+            position: sticky;
+            top: 20vh;
+            height: fit-content;
+        }
+
+        .obsession-counter {
+            font-size: clamp(5rem, 15vw, 12rem);
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .obsession-label {
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            margin-top: 1rem;
+        }
+
+        .obsession-sublabel {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .obsession-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--pommelien-pink);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Calendar Heatmap */
+        .heatmap-container {
+            margin-top: 4rem;
+        }
+
+        .heatmap-title {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(31, 1fr);
+            gap: 3px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.3);
+            z-index: 10;
+        }
+
+        .heatmap-cell.intensity-1 { background: rgba(233, 30, 99, 0.2); }
+        .heatmap-cell.intensity-2 { background: rgba(233, 30, 99, 0.4); }
+        .heatmap-cell.intensity-3 { background: rgba(233, 30, 99, 0.6); }
+        .heatmap-cell.intensity-4 { background: rgba(233, 30, 99, 0.8); }
+        .heatmap-cell.intensity-5 { background: var(--pommelien-pink); box-shadow: 0 0 20px var(--pommelien-pink); }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .heatmap-legend-cell {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: ATLAS - THE SONG
+        ═══════════════════════════════════════════════════════════════ */
+        .section-atlas {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10vh 5vw;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .atlas-visual {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .atlas-ring {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: linear-gradient(var(--bg-void), var(--bg-void)) padding-box,
+                        var(--pommelien-gradient) border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: atlasRotate 20s linear infinite;
+        }
+
+        @keyframes atlasRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .atlas-inner {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(233, 30, 99, 0.3) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: atlasRotate 20s linear infinite reverse;
+        }
+
+        .atlas-number {
+            font-size: 5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .atlas-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900;
+            font-style: italic;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .atlas-stats {
+            display: flex;
+            gap: 4rem;
+            margin-top: 2rem;
+        }
+
+        .atlas-stat {
+            text-align: center;
+        }
+
+        .atlas-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .atlas-stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+
+        .atlas-context {
+            margin-top: 3rem;
+            max-width: 500px;
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        .atlas-context strong {
+            color: var(--pommelien-pink);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: THE TRACKS
+        ═══════════════════════════════════════════════════════════════ */
+        .section-tracks {
+            min-height: 100vh;
+            padding: 10vh 5vw;
+        }
+
+        .tracks-header {
+            max-width: 600px;
+            margin-bottom: 4rem;
+        }
+
+        .tracks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .track-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .track-card:hover {
+            background: rgba(233, 30, 99, 0.1);
+            border-color: var(--pommelien-pink);
+            transform: translateX(8px);
+        }
+
+        .track-card.atlas {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.15) 0%, rgba(156, 39, 176, 0.15) 100%);
+            border-color: var(--pommelien-pink);
+            padding: 2rem;
+        }
+
+        .track-rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 40px;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .track-info {
+            flex: 1;
+        }
+
+        .track-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .track-meta {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .track-bar {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .track-bar-fill {
+            height: 100%;
+            background: var(--pommelien-gradient);
+            border-radius: 2px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: THE ARC (FADE & RETURN)
+        ═══════════════════════════════════════════════════════════════ */
+        .section-arc {
+            min-height: 100vh;
+            padding: 10vh 5vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .arc-chart {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 400px;
+            position: relative;
+        }
+
+        .arc-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .arc-annotation {
+            position: absolute;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            padding: 0.5rem 1rem;
+            background: var(--glass);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            white-space: nowrap;
+        }
+
+        .arc-annotation.discovery { top: 30%; left: 10%; border-color: var(--pommelien-pink); }
+        .arc-annotation.peak { top: 5%; left: 25%; border-color: var(--gold); }
+        .arc-annotation.fade { top: 60%; left: 50%; }
+        .arc-annotation.return { top: 10%; right: 5%; border-color: var(--pommelien-pink); }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: INSIGHTS
+        ═══════════════════════════════════════════════════════════════ */
+        .section-insights {
+            min-height: 100vh;
+            padding: 10vh 5vw;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 4rem auto 0;
+        }
+
+        @media (max-width: 900px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .insight-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--pommelien-pink);
+            box-shadow: 0 20px 60px rgba(233, 30, 99, 0.1);
+        }
+
+        .insight-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-value {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SECTION: FINALE
+        ═══════════════════════════════════════════════════════════════ */
+        .section-finale {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10vh 5vw;
+            position: relative;
+        }
+
+        .finale-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 12vw, 10rem);
+            font-weight: 900;
+            background: var(--pommelien-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .finale-stats {
+            display: flex;
+            gap: 4rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        .finale-stat {
+            text-align: center;
+        }
+
+        .finale-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .finale-stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .finale-date {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.2em;
+        }
+
+        .finale-credit {
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .finale-credit a {
+            color: var(--pommelien-pink);
+            text-decoration: none;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           UTILITIES
+        ═══════════════════════════════════════════════════════════════ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+</head>
+<body>
+    <!-- PRELOADER -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-text">LOADING YOUR STORY</div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="nav">
+        <div class="nav-logo">1+1=1</div>
+        <div class="nav-progress">
+            <div class="nav-progress-bar" id="progressBar"></div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <canvas class="hero-bg-canvas" id="heroCanvas"></canvas>
+        <div class="hero-content">
+            <p class="hero-overline">14 Years of Sound | 2011 — 2025</p>
+            <h1 class="hero-title">
+                <span class="line1">THE</span>
+                <span class="line2">POMMELIEN EFFECT</span>
+            </h1>
+            <p class="hero-subtitle">A story of discovery, obsession, and 2,630 moments of connection</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number green" data-target="141">0</div>
+                    <div class="hero-stat-label">Days of Music</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number pink" data-target="2630">0</div>
+                    <div class="hero-stat-label">Pommelien Plays</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number gold" data-target="84">0</div>
+                    <div class="hero-stat-label">Days to #1</div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('before').scrollIntoView({behavior: 'smooth'})">
+            <span>Begin the journey</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- BEFORE: THE WANDERING YEARS -->
+    <section class="section-before" id="before">
+        <div class="chapter-label reveal">Chapter One</div>
+        <h2 class="section-title reveal">Before<br>Pommelien</h2>
+        <p class="section-prose reveal">
+            For fourteen years, your music flowed like a river—changing course with each season.
+            Artists came and went. Muse in 2011. Fleetwood Mac in 2020. Luke Combs in 2021.
+            Each year brought a new companion, but none stayed for long.
+        </p>
+        <div class="timeline-river" id="timeline">
+            <!-- Generated by JS -->
+        </div>
+    </section>
+
+    <!-- THE DISCOVERY -->
+    <section class="section-discovery" id="discovery">
+        <div class="discovery-bg"></div>
+        <div class="discovery-date reveal">
+            October 7, 2024
+            <div class="discovery-time">20:00 — Peak listening hour</div>
+        </div>
+        <h2 class="discovery-name reveal">POMMELIEN<br>THIJS</h2>
+        <p class="discovery-subtitle reveal">
+            First play. <em>Everything changed.</em>
+        </p>
+    </section>
+
+    <!-- THE OBSESSION -->
+    <section class="section-obsession" id="obsession">
+        <div class="chapter-label reveal">Chapter Two</div>
+        <h2 class="section-title reveal">The<br>Obsession</h2>
+
+        <div class="obsession-grid">
+            <div class="obsession-left">
+                <div class="obsession-counter" id="obsessionCounter">0</div>
+                <div class="obsession-label">plays in 84 days</div>
+                <div class="obsession-sublabel">31 plays per day. 1.4 hours daily.</div>
+            </div>
+
+            <div class="obsession-cards">
+                <div class="glass-card reveal">
+                    <div class="card-header">
+                        <span class="card-title">Total Listening Time</span>
+                        <span class="card-value">120h</span>
+                    </div>
+                    <p class="card-description">
+                        Five complete days of Pommelien Thijs.
+                        That's more time than you spent with Taylor Swift across 14 years.
+                    </p>
+                </div>
+
+                <div class="glass-card reveal">
+                    <div class="card-header">
+                        <span class="card-title">Unique Tracks Explored</span>
+                        <span class="card-value">50</span>
+                    </div>
+                    <p class="card-description">
+                        You didn't just find an artist—you mapped an entire musical universe.
+                        Every song. Every collaboration. Every hidden gem.
+                    </p>
+                </div>
+
+                <div class="glass-card reveal">
+                    <div class="card-header">
+                        <span class="card-title">Skip Rate</span>
+                        <span class="card-value">10.5%</span>
+                    </div>
+                    <p class="card-description">
+                        Industry average: 20%. You commit to your music.
+                        When you press play, you mean it.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="heatmap-container reveal">
+            <div class="heatmap-title">The October-December Fire</div>
+            <div class="heatmap" id="heatmap">
+                <!-- Generated by JS -->
+            </div>
+            <div class="heatmap-legend">
+                <span>Less</span>
+                <div class="heatmap-legend-cell" style="background: rgba(233, 30, 99, 0.2)"></div>
+                <div class="heatmap-legend-cell" style="background: rgba(233, 30, 99, 0.4)"></div>
+                <div class="heatmap-legend-cell" style="background: rgba(233, 30, 99, 0.6)"></div>
+                <div class="heatmap-legend-cell" style="background: rgba(233, 30, 99, 0.8)"></div>
+                <div class="heatmap-legend-cell" style="background: #E91E63"></div>
+                <span>More</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ATLAS -->
+    <section class="section-atlas" id="atlas">
+        <div class="chapter-label reveal">Chapter Three</div>
+        <div class="atlas-visual reveal">
+            <div class="atlas-ring">
+                <div class="atlas-inner">
+                    <div class="atlas-number">413</div>
+                </div>
+            </div>
+        </div>
+        <h2 class="atlas-title reveal">Atlas</h2>
+        <p class="section-prose reveal" style="text-align: center; margin: 0 auto;">
+            One song. 413 plays. 19 hours.
+        </p>
+        <div class="atlas-stats reveal">
+            <div class="atlas-stat">
+                <div class="atlas-stat-value">16%</div>
+                <div class="atlas-stat-label">of all Pommelien plays</div>
+            </div>
+            <div class="atlas-stat">
+                <div class="atlas-stat-value">2x</div>
+                <div class="atlas-stat-label">more than #2 track</div>
+            </div>
+            <div class="atlas-stat">
+                <div class="atlas-stat-value">19h</div>
+                <div class="atlas-stat-label">total listening time</div>
+            </div>
+        </div>
+        <p class="atlas-context reveal">
+            <strong>Atlas</strong> isn't just your most-played Pommelien track—it's your most-played track of all time.
+            More than any Fleetwood Mac song. More than any Taylor Swift anthem.
+            This single song carries the weight of a thousand moments.
+        </p>
+    </section>
+
+    <!-- THE TRACKS -->
+    <section class="section-tracks" id="tracks">
+        <div class="tracks-header">
+            <div class="chapter-label reveal">Chapter Four</div>
+            <h2 class="section-title reveal">The<br>Sacred Tracks</h2>
+        </div>
+        <div class="tracks-grid" id="tracksGrid">
+            <!-- Generated by JS -->
+        </div>
+    </section>
+
+    <!-- THE ARC -->
+    <section class="section-arc" id="arc">
+        <div class="chapter-label reveal">Chapter Five</div>
+        <h2 class="section-title reveal">The Arc</h2>
+        <p class="section-prose reveal">
+            Every obsession has a rhythm. A discovery. A peak. A fade. And sometimes... a return.
+        </p>
+        <div class="arc-chart reveal">
+            <svg class="arc-svg" id="arcSvg" viewBox="0 0 1200 400" preserveAspectRatio="none">
+                <!-- Generated by JS -->
+            </svg>
+            <div class="arc-annotation discovery">Oct 7: Discovery</div>
+            <div class="arc-annotation peak">Dec: 142 hours (Peak)</div>
+            <div class="arc-annotation fade">Feb-Sep: The Quiet</div>
+            <div class="arc-annotation return">Oct 25: 161 hours (Return)</div>
+        </div>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section class="section-insights" id="insights">
+        <div class="chapter-label reveal">Chapter Six</div>
+        <h2 class="section-title reveal">The Numbers<br>That Matter</h2>
+
+        <div class="insights-grid">
+            <div class="insight-card reveal">
+                <div class="insight-icon">🎧</div>
+                <h3 class="insight-title">Peak Hour</h3>
+                <div class="insight-value">20:00</div>
+                <p class="insight-desc">4,860 plays at 8 PM. Your evening ritual. The transition from day to night, scored by music.</p>
+            </div>
+
+            <div class="insight-card reveal">
+                <div class="insight-icon">📅</div>
+                <h3 class="insight-title">Peak Day</h3>
+                <div class="insight-value">Friday</div>
+                <p class="insight-desc">12,418 plays. The weekend warmup is real. Music as celebration.</p>
+            </div>
+
+            <div class="insight-card reveal">
+                <div class="insight-icon">🌍</div>
+                <h3 class="insight-title">Home Base</h3>
+                <div class="insight-value">97.5%</div>
+                <p class="insight-desc">Almost every stream from the Netherlands. With brief adventures to France, Japan, Vietnam.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINALE -->
+    <section class="section-finale" id="finale">
+        <h2 class="finale-title reveal">1+1=1</h2>
+        <div class="finale-stats reveal">
+            <div class="finale-stat">
+                <div class="finale-stat-value">3,387</div>
+                <div class="finale-stat-label">Hours of Music</div>
+            </div>
+            <div class="finale-stat">
+                <div class="finale-stat-value">71,894</div>
+                <div class="finale-stat-label">Total Streams</div>
+            </div>
+            <div class="finale-stat">
+                <div class="finale-stat-value">10,068</div>
+                <div class="finale-stat-label">Unique Artists</div>
+            </div>
+            <div class="finale-stat">
+                <div class="finale-stat-value">14</div>
+                <div class="finale-stat-label">Years of Sound</div>
+            </div>
+        </div>
+        <p class="finale-date reveal">Generated December 31, 2025</p>
+        <p class="finale-credit reveal">
+            Built with obsession by <a href="#">Nouri Mabrouk</a>
+        </p>
+    </section>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // GSAP SETUP
+        // ═══════════════════════════════════════════════════════════════
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ═══════════════════════════════════════════════════════════════
+        // DATA
+        // ═══════════════════════════════════════════════════════════════
+        const yearlyData = [
+            { year: 2011, plays: 275, artist: 'Muse' },
+            { year: 2012, plays: 237, artist: 'Amos Lee' },
+            { year: 2013, plays: 150, artist: 'Passenger' },
+            { year: 2017, plays: 670, artist: 'Daniel Balavoine' },
+            { year: 2018, plays: 6219, artist: 'Herman van Veen' },
+            { year: 2019, plays: 3418, artist: 'Veldhuis & Kemper' },
+            { year: 2020, plays: 8884, artist: 'Fleetwood Mac' },
+            { year: 2021, plays: 11982, artist: 'Luke Combs' },
+            { year: 2022, plays: 4841, artist: 'Yao Chen' },
+            { year: 2023, plays: 8294, artist: 'Foreigner' },
+            { year: 2024, plays: 10257, artist: 'Lewis Capaldi' },
+            { year: 2025, plays: 16667, artist: 'Pommelien Thijs' }
+        ];
+
+        const pommelienTracks = [
+            { name: 'Atlas', plays: 413, hours: 19.0 },
+            { name: 'Wie we morgen zijn', plays: 115, hours: 5.6 },
+            { name: 'Roekeloos (feat. WIES)', plays: 112, hours: 4.7 },
+            { name: 'Het beste moet nog komen', plays: 108, hours: 4.6 },
+            { name: 'Doen of Zijn', plays: 104, hours: 4.3 },
+            { name: 'Erop Of Eronder', plays: 100, hours: 4.1 },
+            { name: 'Koning minimaliseren', plays: 98, hours: 4.1 },
+            { name: 'Wat Een Idee!?', plays: 96, hours: 4.1 },
+            { name: 'Hypothetisch', plays: 91, hours: 4.1 },
+            { name: 'Bel me als je thuis bent', plays: 90, hours: 4.9 },
+            { name: 'Entertainment', plays: 83, hours: 3.7 },
+            { name: 'Tegenwoordige Tijd', plays: 83, hours: 4.8 }
+        ];
+
+        const monthlyArc = [
+            { month: 'Oct 24', hours: 102.4 },
+            { month: 'Nov 24', hours: 60.2 },
+            { month: 'Dec 24', hours: 142.0 },
+            { month: 'Jan 25', hours: 128.9 },
+            { month: 'Feb 25', hours: 34.8 },
+            { month: 'Mar 25', hours: 89.0 },
+            { month: 'Apr 25', hours: 122.7 },
+            { month: 'May 25', hours: 121.6 },
+            { month: 'Jun 25', hours: 10.5 },
+            { month: 'Jul 25', hours: 40.8 },
+            { month: 'Aug 25', hours: 73.5 },
+            { month: 'Sep 25', hours: 12.1 },
+            { month: 'Oct 25', hours: 161.4 }
+        ];
+
+        // ═══════════════════════════════════════════════════════════════
+        // PRELOADER
+        // ═══════════════════════════════════════════════════════════════
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+                initHeroAnimations();
+            }, 1500);
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // HERO CANVAS (Particle System)
+        // ═══════════════════════════════════════════════════════════════
+        const canvas = document.getElementById('heroCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.color = Math.random() > 0.5 ? '#E91E63' : '#9C27B0';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function initParticles() {
+            resizeCanvas();
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        initParticles();
+        animateParticles();
+
+        // ═══════════════════════════════════════════════════════════════
+        // HERO ANIMATIONS
+        // ═══════════════════════════════════════════════════════════════
+        function initHeroAnimations() {
+            const tl = gsap.timeline();
+
+            tl.to('.hero-overline', { opacity: 1, y: 0, duration: 0.8 })
+              .to('.hero-title', { opacity: 1, y: 0, duration: 1 }, '-=0.4')
+              .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+              .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
+              .to('.scroll-indicator', { opacity: 1, y: 0, duration: 0.8 }, '-=0.3');
+
+            // Animate counters
+            document.querySelectorAll('.hero-stat-number[data-target]').forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                gsap.to(counter, {
+                    textContent: target,
+                    duration: 2,
+                    delay: 1.5,
+                    snap: { textContent: 1 },
+                    ease: 'power2.out'
+                });
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // PROGRESS BAR
+        // ═══════════════════════════════════════════════════════════════
+        gsap.to('#progressBar', {
+            width: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // REVEAL ANIMATIONS
+        // ═══════════════════════════════════════════════════════════════
+        gsap.utils.toArray('.reveal').forEach(elem => {
+            gsap.from(elem, {
+                opacity: 0,
+                y: 40,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: elem,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // TIMELINE RIVER
+        // ═══════════════════════════════════════════════════════════════
+        const timeline = document.getElementById('timeline');
+        yearlyData.forEach(year => {
+            const isPommelien = year.year === 2025;
+            const stone = document.createElement('div');
+            stone.className = `year-stone ${isPommelien ? 'pommelien-era' : ''}`;
+            stone.innerHTML = `
+                <div class="year-number">${year.year}</div>
+                <div class="year-artist">${year.artist}</div>
+                <div class="year-plays">${year.plays.toLocaleString()}</div>
+            `;
+            timeline.appendChild(stone);
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // DISCOVERY SECTION
+        // ═══════════════════════════════════════════════════════════════
+        ScrollTrigger.create({
+            trigger: '#discovery',
+            start: 'top center',
+            end: 'bottom center',
+            onEnter: () => {
+                document.querySelector('.section-discovery').classList.add('active');
+                // Fire confetti!
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#E91E63', '#9C27B0', '#673AB7']
+                });
+            },
+            onLeaveBack: () => {
+                document.querySelector('.section-discovery').classList.remove('active');
+            }
+        });
+
+        gsap.to('.discovery-name', {
+            scale: 1,
+            opacity: 1,
+            duration: 1.5,
+            ease: 'power4.out',
+            scrollTrigger: {
+                trigger: '#discovery',
+                start: 'top center',
+                toggleActions: 'play none none reverse'
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // OBSESSION COUNTER
+        // ═══════════════════════════════════════════════════════════════
+        gsap.to('#obsessionCounter', {
+            textContent: 2630,
+            duration: 3,
+            snap: { textContent: 1 },
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: '#obsession',
+                start: 'top center',
+                toggleActions: 'play none none reverse'
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // HEATMAP
+        // ═══════════════════════════════════════════════════════════════
+        const heatmap = document.getElementById('heatmap');
+        const heatmapData = [
+            // October 2024 (days 1-31)
+            [0,0,0,0,0,0,1,2,3,3,4,4,4,5,5,4,4,5,5,5,4,4,5,5,5,5,4,5,5,5,5],
+            // November 2024
+            [4,4,3,3,4,4,3,3,3,4,4,3,3,2,3,3,4,3,3,2,2,3,3,4,4,3,3,3,3,3,0],
+            // December 2024
+            [4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]
+        ];
+
+        const months = ['Oct', 'Nov', 'Dec'];
+        heatmapData.forEach((monthData, monthIndex) => {
+            monthData.forEach((intensity, dayIndex) => {
+                const cell = document.createElement('div');
+                cell.className = `heatmap-cell ${intensity > 0 ? `intensity-${intensity}` : ''}`;
+                cell.title = `${months[monthIndex]} ${dayIndex + 1}: ${intensity * 20}% intensity`;
+                heatmap.appendChild(cell);
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // TRACKS GRID
+        // ═══════════════════════════════════════════════════════════════
+        const tracksGrid = document.getElementById('tracksGrid');
+        pommelienTracks.forEach((track, i) => {
+            const card = document.createElement('div');
+            card.className = `track-card ${i === 0 ? 'atlas' : ''} reveal`;
+            const pct = (track.plays / pommelienTracks[0].plays) * 100;
+            card.innerHTML = `
+                <div class="track-rank">${i + 1}</div>
+                <div class="track-info">
+                    <div class="track-name">${track.name}</div>
+                    <div class="track-meta">${track.plays} plays · ${track.hours}h</div>
+                </div>
+                <div class="track-bar">
+                    <div class="track-bar-fill" style="width: ${pct}%"></div>
+                </div>
+            `;
+            tracksGrid.appendChild(card);
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // ARC CHART (SVG)
+        // ═══════════════════════════════════════════════════════════════
+        const arcSvg = document.getElementById('arcSvg');
+        const maxHours = Math.max(...monthlyArc.map(m => m.hours));
+        const width = 1200;
+        const height = 400;
+        const padding = 50;
+
+        // Create path
+        let pathD = '';
+        monthlyArc.forEach((point, i) => {
+            const x = padding + (i / (monthlyArc.length - 1)) * (width - padding * 2);
+            const y = height - padding - (point.hours / maxHours) * (height - padding * 2);
+            pathD += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
+        });
+
+        // Gradient
+        const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        gradient.innerHTML = `
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#E91E63"/>
+                <stop offset="50%" style="stop-color:#9C27B0"/>
+                <stop offset="100%" style="stop-color:#E91E63"/>
+            </linearGradient>
+        `;
+        arcSvg.appendChild(gradient);
+
+        // Area fill
+        const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const areaD = pathD + ` L ${width - padding} ${height - padding} L ${padding} ${height - padding} Z`;
+        areaPath.setAttribute('d', areaD);
+        areaPath.setAttribute('fill', 'url(#arcGradient)');
+        areaPath.setAttribute('opacity', '0.15');
+        arcSvg.appendChild(areaPath);
+
+        // Line
+        const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        linePath.setAttribute('d', pathD);
+        linePath.setAttribute('stroke', 'url(#arcGradient)');
+        linePath.setAttribute('stroke-width', '3');
+        linePath.setAttribute('fill', 'none');
+        arcSvg.appendChild(linePath);
+
+        // Points
+        monthlyArc.forEach((point, i) => {
+            const x = padding + (i / (monthlyArc.length - 1)) * (width - padding * 2);
+            const y = height - padding - (point.hours / maxHours) * (height - padding * 2);
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            circle.setAttribute('r', point.hours > 100 ? 8 : 5);
+            circle.setAttribute('fill', point.hours > 100 ? '#E91E63' : '#9C27B0');
+            arcSvg.appendChild(circle);
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // FINALE CONFETTI
+        // ═══════════════════════════════════════════════════════════════
+        ScrollTrigger.create({
+            trigger: '#finale',
+            start: 'top center',
+            onEnter: () => {
+                // Epic confetti burst
+                const duration = 3000;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 3,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0, y: 0.8 },
+                        colors: ['#E91E63', '#9C27B0', '#673AB7', '#FFD700']
+                    });
+                    confetti({
+                        particleCount: 3,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1, y: 0.8 },
+                        colors: ['#E91E63', '#9C27B0', '#673AB7', '#FFD700']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            },
+            once: true
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // SMOOTH SCROLL LINKS
+        // ═══════════════════════════════════════════════════════════════
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
