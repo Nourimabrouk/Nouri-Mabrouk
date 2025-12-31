@@ -1,0 +1,21 @@
+# Nouri-Mabrouk Metastation Dependencies
+# Core visualization and data science
+numpy>=1.24.0
+matplotlib>=3.7.0
+plotly>=5.18.0
+
+# AI and agents (for future metastation work)
+anthropic>=0.18.0
+langchain>=0.1.0
+langchain-anthropic>=0.1.0
+
+# Async and utilities
+aiohttp>=3.9.0
+python-dotenv>=1.0.0
+
+# Code quality (minimal, meta-optimal)
+ruff>=0.1.0
+
+# Optional: Notebooks for thinking in public
+jupyter>=1.0.0
+ipykernel>=6.25.0

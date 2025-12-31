@@ -1,0 +1,144 @@
+============================================================
+AGENT PERFORMANCE SUMMARY
+============================================================
+
+
+MANDELBROT
+----------------------------------------
+  Role: Fractal
+  Tasks Completed: 20
+  Points Created: 722,500
+  Insights Generated: 20
+  Final Status: idle
+
+HERMIT
+----------------------------------------
+  Role: Philosophical
+  Tasks Completed: 20
+  Points Created: 25,107
+  Insights Generated: 20
+  Final Status: idle
+
+SYNTHESIS
+----------------------------------------
+  Role: Unity
+  Tasks Completed: 20
+  Points Created: 19,960
+  Insights Generated: 20
+  Final Status: idle
+
+RECURSION
+----------------------------------------
+  Role: Droste Effect
+  Tasks Completed: 10
+  Points Created: 15,630
+  Insights Generated: 10
+  Final Status: idle
+
+UNITY
+----------------------------------------
+  Role: Final Collapse
+  Tasks Completed: 10
+  Points Created: 13,460
+  Insights Generated: 10
+  Final Status: idle
+
+CONSCIOUSNESS
+----------------------------------------
+  Role: Swarm Mind
+  Tasks Completed: 10
+  Points Created: 12,010
+  Insights Generated: 10
+  Final Status: idle
+
+TIME
+----------------------------------------
+  Role: Temporal
+  Tasks Completed: 10
+  Points Created: 9,120
+  Insights Generated: 10
+  Final Status: idle
+
+METALOOP
+----------------------------------------
+  Role: Self-Reference
+  Tasks Completed: 10
+  Points Created: 8,530
+  Insights Generated: 10
+  Final Status: idle
+
+GROTHENDIECK
+----------------------------------------
+  Role: Rising Sea
+  Tasks Completed: 20
+  Points Created: 8,400
+  Insights Generated: 20
+  Final Status: idle
+
+SCHEME
+----------------------------------------
+  Role: Algebraic Geometry
+  Tasks Completed: 20
+  Points Created: 7,240
+  Insights Generated: 20
+  Final Status: idle
+
+MOTIVES
+----------------------------------------
+  Role: Universal Cohomology
+  Tasks Completed: 20
+  Points Created: 6,220
+  Insights Generated: 20
+  Final Status: idle
+
+NUT_AND_SEA
+----------------------------------------
+  Role: Paradigms
+  Tasks Completed: 10
+  Points Created: 5,120
+  Insights Generated: 10
+  Final Status: idle
+
+TOPOS
+----------------------------------------
+  Role: Generalized Spaces
+  Tasks Completed: 20
+  Points Created: 3,720
+  Insights Generated: 20
+  Final Status: idle
+
+PRIME
+----------------------------------------
+  Role: Ulam Spiral
+  Tasks Completed: 20
+  Points Created: 3,360
+  Insights Generated: 20
+  Final Status: idle
+
+FIBONACCI
+----------------------------------------
+  Role: Golden Spiral
+  Tasks Completed: 20
+  Points Created: 2,680
+  Insights Generated: 20
+  Final Status: idle
+
+CATEGORY_THEORY
+----------------------------------------
+  Role: Morphisms
+  Tasks Completed: 10
+  Points Created: 720
+  Insights Generated: 10
+  Final Status: idle
+
+EULER
+----------------------------------------
+  Role: Five Constants
+  Tasks Completed: 20
+  Points Created: 120
+  Insights Generated: 20
+  Final Status: idle
+
+============================================================
+END OF AGENT SUMMARY
+============================================================
