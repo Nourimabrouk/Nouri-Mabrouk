@@ -95,7 +95,7 @@ class UnityLoop:
 
         return convergence
 
-    def _calculate_unity_dimensions(self, outputs: dict[str, VisualizationData]) -> dict[str, float]:
+    def _calculate_unity_dimensions(self, outputs: dict[str, VisualizationData], *, bus=None) -> dict[str, float]:
         """
         Multidimensional unity metrics — "all dimensions must be high".
 
@@ -106,7 +106,8 @@ class UnityLoop:
         - scale: avoids degenerate collapse; favors non-trivial radius
         Final unity suggestion: min of dimensions.
         """
-        metrics = {"cohesion": 0.0, "isotropy": 0.0, "angular_entropy": 0.0, "scale": 0.0}
+        metrics = {"cohesion": 0.0, "isotropy": 0.0, "angular_entropy": 0.0, "scale": 0.0,
+                   "diversity": 0.0, "connectivity": 0.0, "radial_entropy": 0.0}
 
         if not outputs:
             return metrics
@@ -180,11 +181,60 @@ class UnityLoop:
         # Assume visuals ~ within 800x800 canvas; normalize by 400
         scale = max(0.0, min(1.0, mean_radius / 400.0))
 
+        # 5) Diversity: balanced contribution across sources (agents)
+        counts_by_src = [len(v.points) for v in outputs.values()] or [1]
+        total_pts = sum(counts_by_src) or 1
+        probs_src = [c / total_pts for c in counts_by_src if c > 0]
+        if probs_src:
+            H_src = -sum(p * _math.log(p) for p in probs_src)
+            Hmax_src = _math.log(len(counts_by_src)) if counts_by_src else 1.0
+            diversity = max(0.0, min(1.0, float(H_src / (Hmax_src or 1.0))))
+        else:
+            diversity = 0.0
+
+        # 6) Connectivity: message-bus synchrony/reciprocity/participation
+        connectivity = 0.0
+        if bus is not None:
+            history = getattr(bus, "_history", []) or []
+            if history:
+                senders = [m.sender for m in history]
+                receivers = [m.receiver for m in history if m.receiver != "all"]
+                agents = set(senders) | set(receivers)
+                participation = len(set(senders)) / (len(agents) or 1)
+                pairs = set((m.sender, m.receiver) for m in history if m.receiver != "all")
+                rev = set((b, a) for (a, b) in pairs)
+                bidir = len(pairs & rev)
+                reciprocity = bidir / (len(pairs) or 1)
+                insights = [m for m in history if getattr(m, "message_type", "") == "insight"]
+                cascade = 1.0 - _math.exp(-(len(insights) / 8.0))
+                connectivity = max(0.0, min(1.0, 0.4 * participation + 0.4 * reciprocity + 0.2 * cascade))
+
+        # 7) Radial entropy: multi-scale coverage across radii
+        bins_r = 16
+        if max_dist > 0:
+            r_counts = [0] * bins_r
+            for d in dists:
+                idx = int((d / max_dist) * (bins_r - 1))
+                r_counts[idx] += 1
+            total_r = sum(r_counts) or 1
+            probs_r = [c / total_r for c in r_counts if c > 0]
+            if probs_r:
+                H_r = -sum(p * _math.log(p) for p in probs_r)
+                Hmax_r = _math.log(bins_r)
+                radial_entropy = max(0.0, min(1.0, float(H_r / (Hmax_r or 1.0))))
+            else:
+                radial_entropy = 0.0
+        else:
+            radial_entropy = 0.0
+
         metrics.update(
             cohesion=cohesion,
             isotropy=isotropy,
             angular_entropy=angular_entropy,
             scale=scale,
+            diversity=diversity,
+            connectivity=connectivity,
+            radial_entropy=radial_entropy,
         )
         return metrics
 
@@ -233,17 +283,22 @@ class UnityLoop:
 
             # Calculate convergence
             convergence = self._calculate_convergence(self.all_outputs)
-            dims = self._calculate_unity_dimensions(self.all_outputs)
-            multi_unity = min(dims.values()) if dims else 0.0
+            dims = self._calculate_unity_dimensions(self.all_outputs, bus=swarm.bus)
+            beta = 5.0
+            vals = list(dims.values()) or [0.0]
+            softmin = - (1.0 / beta) * math.log(sum(math.exp(-beta * v) for v in vals) / len(vals))
+            multi_unity = max(0.0, min(1.0, float(softmin)))
             self.convergence_history.append(convergence)
             self.unity_dimension_history.append(dims)
 
             print(f"\n[Phase 3] Convergence Analysis")
             print(f"  > Cohesion (legacy): {convergence:.4f}")
+            print("  > Multidimensional unity (soft-min, beta=5):")
             print(
-                "  > Multidimensional unity: "
-                f"min({{cohesion:{dims.get('cohesion',0):.2f}, isotropy:{dims.get('isotropy',0):.2f}, "
-                f"angular_entropy:{dims.get('angular_entropy',0):.2f}, scale:{dims.get('scale',0):.2f}}}) = {multi_unity:.4f}"
+                f"    cohesion={dims.get('cohesion',0):.2f}, isotropy={dims.get('isotropy',0):.2f}, "
+                f"angular_entropy={dims.get('angular_entropy',0):.2f}, scale={dims.get('scale',0):.2f}, "
+                f"diversity={dims.get('diversity',0):.2f}, connectivity={dims.get('connectivity',0):.2f}, "
+                f"radial_entropy={dims.get('radial_entropy',0):.2f} -> unity={multi_unity:.4f}"
             )
             print(f"  > Trend: {'RISING' if len(self.convergence_history) > 1 and convergence > self.convergence_history[-2] else 'STABLE'}")
 
