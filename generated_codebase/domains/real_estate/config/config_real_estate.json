@@ -1,0 +1,35 @@
+{
+  "domain": {
+    "name": "real_estate",
+    "version": "1.0.0"
+  },
+  "agents": {
+    "default": {
+      "max_retries": 3,
+      "timeout_seconds": 30,
+      "batch_size": 100,
+      "cache_ttl_seconds": 300,
+      "confidence_threshold": 0.85,
+      "quality_threshold": 0.9
+    }
+  },
+  "services": {
+    "api": {
+      "host": "0.0.0.0",
+      "port": 8010,
+      "workers": 4
+    }
+  },
+  "database": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5432,
+    "name": "real_estate_db"
+  },
+  "cache": {
+    "type": "redis",
+    "host": "localhost",
+    "port": 6379,
+    "db": 10
+  }
+}

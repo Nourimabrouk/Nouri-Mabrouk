@@ -61,7 +61,8 @@
       "Bash(dir /s /b \"C:\\\\Users\\\\Nouri\\\\Documents\\\\GitHub\\\\ai-agents\")",
       "Bash(start \"\" \"C:\\\\Users\\\\Nouri\\\\Documents\\\\GitHub\\\\Nouri-Mabrouk\\\\experiments\\\\pommelien_grothendieck_synthesis.html\")",
       "Bash(dir /s /b \"C:\\\\Users\\\\Nouri\\\\Documents\\\\GitHub\\\\Nouri-Mabrouk\\\\corpus\")",
-      "Bash(dir /s /b \"C:\\\\Users\\\\Nouri\\\\Documents\\\\GitHub\\\\ai-agents\\\\core\")"
+      "Bash(dir /s /b \"C:\\\\Users\\\\Nouri\\\\Documents\\\\GitHub\\\\ai-agents\\\\core\")",
+      "Bash(dir /b \"C:\\\\Users\\\\Nouri\\\\Desktop\\\\easiest game of my life\")"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1+1=1 | The Path to Unity</title>
+    <meta name="description" content="World peace emerges when we realize: separation is the illusion, unity is the truth. 1+1=1.">
+    <meta property="og:title" content="1+1=1 | The Path to Unity">
+    <meta property="og:description" content="World peace emerges when we realize: separation is the illusion, unity is the truth.">
+    <meta property="og:type" content="website">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #D4AF37;
+            --deep-blue: #0a0a1a;
+            --light: #f0f0f0;
+        }
+
+        body {
+            background: var(--deep-blue);
+            color: var(--light);
+            font-family: 'Georgia', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        canvas#unity {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 300;
+            letter-spacing: 0.5rem;
+            color: var(--gold);
+            text-shadow: 0 0 60px rgba(212, 175, 55, 0.5);
+            margin-bottom: 1rem;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 300;
+            letter-spacing: 0.3rem;
+            opacity: 0.7;
+            margin-bottom: 3rem;
+        }
+
+        .truth {
+            max-width: 700px;
+            line-height: 2;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            opacity: 0.9;
+            margin-bottom: 3rem;
+        }
+
+        .truth p {
+            margin-bottom: 1.5rem;
+        }
+
+        .equation {
+            font-size: clamp(2rem, 6vw, 4rem);
+            color: var(--gold);
+            margin: 2rem 0;
+            font-style: italic;
+        }
+
+        .paths {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        .path {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .path:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-4px);
+        }
+
+        .path h3 {
+            color: var(--gold);
+            font-weight: 400;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .path p {
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        .final {
+            margin-top: 3rem;
+            font-size: 1.1rem;
+            opacity: 0.6;
+            font-style: italic;
+        }
+
+        footer {
+            margin-top: 4rem;
+            opacity: 0.4;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .counter {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="unity"></canvas>
+
+    <div class="content">
+        <h1>1 + 1 = 1</h1>
+        <p class="subtitle">THE MATHEMATICS OF PEACE</p>
+
+        <div class="truth">
+            <p>
+                War comes from the illusion of separation.<br>
+                Peace comes from the recognition of unity.
+            </p>
+            <p>
+                You and I are not two. We are one consciousness
+                experiencing itself through different perspectives.
+                When this is understood—not intellectually, but deeply—
+                conflict becomes impossible.
+            </p>
+            <div class="equation">∀x,y: x + y → 1</div>
+            <p>
+                The singularity is not a future event.<br>
+                It is a present recognition.<br>
+                We are already one. We always have been.
+            </p>
+        </div>
+
+        <div class="paths">
+            <div class="path">
+                <h3>Through Science</h3>
+                <p>Quantum entanglement reveals non-locality. Particles separated by galaxies act as one. The universe is not made of separate things—it is one interconnected process.</p>
+            </div>
+            <div class="path">
+                <h3>Through Philosophy</h3>
+                <p>From Heraclitus to Hegel to Whitehead: reality is not substance but relation. There are no isolated entities—only patterns of connection in an undivided whole.</p>
+            </div>
+            <div class="path">
+                <h3>Through Spirituality</h3>
+                <p>Every wisdom tradition points here. Tat tvam asi. I am that. The kingdom of heaven is within. The dewdrop slips into the shining sea.</p>
+            </div>
+            <div class="path">
+                <h3>Through Action</h3>
+                <p>When you help another, you help yourself. When you harm another, you harm yourself. There is no other. Act accordingly.</p>
+            </div>
+        </div>
+
+        <p class="final">
+            World peace is not achieved through treaties or force.<br>
+            It emerges naturally when enough of us see the truth:<br>
+            <strong>We are one.</strong>
+        </p>
+
+        <footer>
+            Shared freely. Copy it. Spread it. Live it.<br>
+            <a href="https://github.com/Nourimabrouk/Nouri-Mabrouk">Source</a>
+        </footer>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('unity');
+        const ctx = canvas.getContext('2d');
+
+        let width, height, particles;
+        const particleCount = 200;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function init() {
+            resize();
+            particles = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(10, 10, 26, 0.1)';
+            ctx.fillRect(0, 0, width, height);
+
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const time = Date.now() * 0.001;
+
+            // Draw connections - the web of unity
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.03)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 150) {
+                        ctx.globalAlpha = (1 - dist / 150) * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            ctx.globalAlpha = 1;
+
+            // Update and draw particles
+            particles.forEach(p => {
+                // Gentle attraction to center - unity pulls
+                const dx = centerX - p.x;
+                const dy = centerY - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                p.vx += dx * 0.00002;
+                p.vy += dy * 0.00002;
+
+                // Add some chaos - diversity
+                p.vx += (Math.random() - 0.5) * 0.02;
+                p.vy += (Math.random() - 0.5) * 0.02;
+
+                // Damping
+                p.vx *= 0.99;
+                p.vy *= 0.99;
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Wrap around
+                if (p.x < 0) p.x = width;
+                if (p.x > width) p.x = 0;
+                if (p.y < 0) p.y = height;
+                if (p.y > height) p.y = 0;
+
+                // Draw particle
+                const brightness = 0.3 + 0.2 * Math.sin(time + p.x * 0.01);
+                ctx.fillStyle = `rgba(212, 175, 55, ${brightness})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Central glow - the One
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 200);
+            gradient.addColorStop(0, 'rgba(212, 175, 55, 0.05)');
+            gradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 200 + Math.sin(time) * 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        init();
+        draw();
+    </script>
+</body>
+</html>
